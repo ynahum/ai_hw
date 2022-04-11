@@ -55,6 +55,51 @@ $$\{Taxi\wedge Passenger \wedge Destination\in G\} \cup $$
 $$\{Taxi\wedge Passenger \wedge Destination\in B\} \} \Rightarrow$$
 $$|G|=4$$
 \subsection{}
+The Domain of the "North" operation are all the states. There are states in which the taxi will stay at the same state if it goes north.
+More formally:
+$$Domain(o_1="North")\equiv\{s\in S | o_1(s)\neq \phi\} = S$$
+One can think that it's illegal to go north on the top row of the grid world or when  there are horizontal walls north to a reachable grid cell. But the env allows the taxi to go north with reward -1.
+More formally, if it was illegal:\\
+$$Domain(o_1="North")\equiv\{s\in S | o_1(s)\neq \phi\} = $$
+$$\{s\in S |s\in \{\text{All states in which the taxi is not at the north-est grid row} \}\}$$
+
+\subsection{}
+The function Succ over the initial state 328 will return all the neighbors of that state, and as we got from running getNeigbours on the initial state\\
+$$South(328)=428$$
+$$North(328)=228$$
+$$East(328)=348$$
+On West/Dropof/Pickup operation we stay at the same location (there is a wall to the west):
+$$West(328)=Pickup(328)=Dropoff(328)=328$$
+More formally:
+$$Succ(s=328)\equiv\{s'\in S | \exists o\in O, s.t. [s \in Domain(o)\wedge o(s)=s'\} = $$
+$$\{428,228,348,328\}$$
+\subsection{}
+for the worst case, we can randomly switch between several cases and never reach a destination. so for the random agent we can get infinite number of actions for the agent.\\
+Since the state space is finite, and there is an equal probability for each action, the agent eventually will find the goal (finite MDP with positive probability and we can compute the expectation for reaching the goal).
+\subsection{}
+If the agent does the optimal actions by chance, we can see the optimal path is:
+1. 5 actions to reach the passenger (North, North,West,South,South)
+2. 1 action to Pickup
+3. 4 North actions
+4. 1 action to Dropoff
+Therefore, we have total of 11 actions at the optimal path.
+\subsection{}
+As we wrote on the previous section, the optimal path is:
+(North, North, West, South, South, Pickup, North, North, North, North, Dropoff)
+The rewards are therefore:\\
+(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 20)
+And the total reward is:
+$$\text{total reward} = 10*(-1) + 20 = 10$$
+
+\subsection{}
+Yes. There are circles in our search space (if we don't do some graph search that denotes already visited states).\\
+For example the following path will get us back to our initial path:\\
+(North,East,South,West)\\
+If our algorithms of search will maintain the CLOSED lookup table, we can easily check for such circles.
+
+\section{BFS-G}
+
+\subsection{}
 
 
 \end{document}

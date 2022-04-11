@@ -28,10 +28,34 @@
 
 %\tableofcontents{}
 
-\section*{Dry questions on Wet part}
+\section{Intro}
 
-\subsection*{Q1}
-\subsection*{A1}
+\subsection{}
+We use the notation as in the tutorial about the sets as follows:\\
+$$[n] \equiv \{ 1,2,...,n\}$$
+Next, we define the $\{S,O,I,G\}$ as follows:\\
+For the states we know we have 25 places for the taxi to be in the grid.\\
+We have 5 states for the passenger to be $\{R,Y,G,B\}\cup\{in the taxi\}$.
+and 4 states for the destination $\{R,Y,G,B\}$.\\
+Thus, 
+$$S = [500] \Rightarrow $$
+$$ |S| = 25*5*4 = 500$$
+The valid states as defined in the hw notebook are a subset of this states space as the passenger and destination are not at the same location (3 options are left to seleect from for the destination). So,\\
+$$ |S| = 25*5*3 = 375$$
+The operations/actions that our taxi agent can perform are:\\
+$$O = \{0="South",1="North",2="West",3="East",4="Pickup",5="Dropoff"\}\Rightarrow$$
+$$|O| = 6$$
+The initial states can be random, but as defined in the hw notebook, we always starts at $s = 328$. Thus,\\
+$$I=\{328\}\Rightarrow |I|=1$$
+The goal state is when the taxi and passenger are at the destination after the passenger was dropped there. So we have 4 different goal states:\\
+
+$$G=\{s\in S | \{Taxi\wedge Passenger \wedge Destination\in R\} \cup $$
+$$\{Taxi\wedge Passenger \wedge Destination\in Y\} \cup $$
+$$\{Taxi\wedge Passenger \wedge Destination\in G\} \cup $$
+$$\{Taxi\wedge Passenger \wedge Destination\in B\} \} \Rightarrow$$
+$$|G|=4$$
+\subsection{}
+
 
 \end{document}
 

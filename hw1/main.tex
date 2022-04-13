@@ -19,7 +19,7 @@
 
 \newcommand{\qed}{\hfill$\blacksquare$}
 
-\title{Introduction to AI\\HW1}
+\title{Introduction to AI - 236501\\HW1}
 \author{Yair Nahum 034462796\\and\\Hala 209419134 }
 
 \begin{document}
@@ -100,14 +100,37 @@ If our algorithms of search will maintain the CLOSED lookup table, we can easily
 \section{BFS-G}
 
 \subsection{}
-See code in jupyter notebook.
+We've implemented the BFS-G in code (not tree search).\\
+That is, Besides the frontier (the OPEN queue implemented with python list), we maintain a set of states that were already reached (the CLOSE set as described in the book).\\
+We've optimized the number of nodes created when expanding some node in the frontier by checking if its neighbor state was already reached.\\
+We've added also some counters for the created and expanded nodes through the search.\\
 
 \subsection{}
-If we don't check for repetition of states, the nodes that would have expanded were $b^d=6^10=60,466,176$
+The amount of states expanded were 31. If we've used tree search it would have been $b^d=6^10=60,466,176$ , when b is the branching factor (number of possible operations) and d is the shortest path of the goal state from the initial state\\
+BTW, the amount of created nodes was 36 (about 5 nodes remained in the frontier)\\
 
 \subsection{}
-Since we've checked for repetitions and pushed to a dictionary the states that were expanded already, the amount of expanded nodes is much smaller and equals (from test printouts after counting) 100.\\
-BTW, the created nodes (due to expansion) is 601, but only 100 were actually expanded (due to already reached states) or since we haven't got to expand from queue.\\
+This is the same as previous section as we've optimized to create only none reached (not in CLOSE set) states.
+
+\subsection{}
+The main advantage of the BFS/BFS-G compared to DFS (w/o backtracking) is that it's a complete (guaranteed to find a path to the goal) and optimal (that path is the optimal path to the goal state), while DFS (tree search) isn't as it may stuck in infinite loops repeating the same states.\\
+
+In our taxi env, the state space is finite, so if we used DFS-G with graph search, we would have found the solution but it may not be optimal.\\
+
+The disadvantage of BFS is its memory consumption which is $O(b^d)$ while the DFS-G $O(bD)$ (with backtracking $O(D)$) When D is the max depth of the taxi env when we start from some state (bounded by the state space size). DFS with tree search may not end and have an infinite memory consumption as we can repeat the same state in the tree.
+
+\subsection{}
+Yes. In the taxi environment it will always find the optimal solution, as we saw in the lecture,\\
+
+BFS finds the shortest path (number of edges) to any state in the env.\\
+In our case, the taxi env, the edges (actions) doesn't have the same cost but we will still find the optimal solution as the shortest path in edges is also the shortest path in cost.
+\subsubsection*{Proof}
+Completeness: Assuming a solution of cost (depth) d exists. BFS will return the solution before exposing the d+1 layer, We know it will reach the d+1 layer as it works in layers and we can by induction prove that it finds all the nodes in the next layer.
+Optimal: Assume that a solution of cost (depth) d exists and the BFS returns a none optimal solution of cost d’ > d. It will return the optimal solution before exposing the d+1 layer so we get a contradiction.
+
+
+
+
 
 \end{document}
 

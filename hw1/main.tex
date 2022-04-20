@@ -4,7 +4,7 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 
-\graphicspath{ {./plots/} }
+\graphicspath{ {./} }
 
 \newcommand{\rectres}[1]{
 \begin{center}
@@ -164,6 +164,10 @@ The disadvantage of ID-DFS is that it expands the same nodes multiple time and n
 \subsection{}
 The advantage of ID-DFS compared to BFS is its memory complexity. In ID-DFS we have $O(bD)$ (b - branching factor, D - is maximal depth from start state as we run DFS-G on finite state space), while in BFS it's $O(b^d)$ (d - optimal path depth).\\
 The disadvantage of ID-DFS compared to BFS-G is that it expands the same nodes several times while BFS-G expands each node only once.
+
+\subsection{}
+\includegraphics[scale=1]{id_dfs_plot.JPG}\\
+We can see from the graph above that as the depth increases the amount of expanded nodes increases as we go deeper at each iteration of ID-DFS and expand states we haven't visited before due to limited depth.
 
 \end{document}
 

@@ -96,7 +96,7 @@ $$\text{total reward} = 9*(-1) + 20 = 11$$
 Yes. There are circles in our search space (if we don't do some graph search that denotes already visited states).\\
 For example the following path will get us back to our initial path:\\
 (North,East,South,West)\\
-If our algorithms of search will maintain the CLOSED lookup table, we can easily check for such circles.
+If our algorithms of search will maintain the CLOSE lookup table, we can easily check for such circles.
 
 \section{BFS-G}
 
@@ -104,22 +104,22 @@ If our algorithms of search will maintain the CLOSED lookup table, we can easily
 We've implemented the BFS-G in code (not tree search).\\
 That is, Besides the frontier (the OPEN queue implemented with python list), we maintain a set of states that were already reached (the CLOSE set as described in the book).\\
 We've optimized the number of nodes created when expanding some node in the frontier by checking if its neighbor state was already reached or in frontier.\\
-A helper set of frontier (open) states was added, although we could check existence of the node in nodes queue (for simplicity of checking vs reached/frontier states' sets)
+A helper set of frontier (OPEN) states was added, although we could check existence of the node in nodes queue (for simplicity of checking vs reached/frontier states' sets)
 We've added also some counters for the created and expanded nodes through the search.\\
 
 \subsection{}
-The amount of states expanded were 31. If we've used tree search it would have been $b^d=6^{10}=60,466,176$ , when b is the branching factor (number of possible operations) and d is the shortest path of the goal state from the initial state\\
+The amount of states expanded were 31.\\
 BTW, the amount of created nodes was 36 (about 5 nodes remained in the frontier)\\
 
 \subsection{}
-This is the same as previous section as we've optimized to create only none reached (not in CLOSE set) and none frontier (open) states.
+This is the same as previous section as we've optimized to create only none reached (not in CLOSE set) and none frontier (OPEN) states.
 
 \subsection{}
-The main advantage of the BFS/BFS-G compared to DFS (w/o backtracking) is that it's a complete (guaranteed to find a path to the goal) and optimal (that path is the optimal path to the goal state), while DFS (tree search) isn't as it may stuck in infinite loops repeating the same states.\\
+The main advantage of the BFS/BFS-G compared to DFS (tree search) is that it's a complete (guaranteed to find a path to the goal) and optimal (that path is the optimal path to the goal state), while DFS (tree search) isn't as it may stuck in infinite loops repeating the same states.\\
 
-In our taxi env, the state space is finite, so if we use DFS-G with graph search (next section), we will found the solution but it may not be optimal.\\
+In our taxi env, the state space is finite, so if we use DFS-G with graph search (next section), we will find a solution but it may not be optimal.\\
 
-The disadvantage of BFS is its memory consumption which is $O(b^d)$ while the DFS-G $O(bD)$ (with backtracking $O(D)$) When D is the max depth of the taxi env when we start from some state (bounded by the state space size). DFS with tree search may not end and have an infinite memory consumption as we can repeat the same state in the tree (circles). One can run DFG-G or add some circles detection mechanisms (going back several parent nodes for example) as described in the course book.
+The disadvantage of BFS is its memory consumption which is $O(b^d)$ while the DFS-G $O(bD)$ (with backtracking $O(D)$) When D is the max depth of the taxi env when we start from some state (bounded by the state space size). DFS with tree search may not end and have an infinite memory consumption as we can repeat the same state in the tree (circles). One can run DFS-G or add some circles detection mechanisms (going back several parent nodes for example) as described in the course book.
 
 \subsection{}
 Yes. In the taxi environment it will always find the optimal solution, as we saw in the lecture,\\
@@ -130,9 +130,40 @@ In our case, the taxi env, the edges (actions) doesn't have the same cost but we
 Completeness: Assuming a solution of cost (depth) d exists. BFS will return the solution before exposing the d+1 layer, We know it will reach the d+1 layer as it works in layers and we can by induction prove that it finds all the nodes in the next layer.
 Optimal: Assume that a solution of cost (depth) d exists and the BFS returns a none optimal solution of cost d’ > d. It will return the optimal solution before exposing the d+1 layer so we get a contradiction.
 
+\section{DFS}
 
+\subsection{}
+We've implemented the DFS-G similar to BFS-G but the strategy to pop from the frontier (OPEN) was based on LIFO (stack) and not FIFO(queue) as in BFS.\\
+Initially, we've implemented a tree search in which the algo got into infinite loops since we didn't check vs reached states (CLOSE).\\
+We've also played with the tie breaking between neighbor nodes (by random shuffle) or by just reversing the order of addition to frontier and got different paths.\\
+This is not surprising, as DFS-G may return some solution which is not optimal.
+Again, DFS-G \textbf{\emph{on finite state space}} , as in the taxi world, is a complete search algorithm (DFS tree search is not since we can get stuck in a loop) but not optimal. 
 
+\subsection{}
+The number of states expanded when we didn't find the optimal path were 96.
 
+\subsection{}
+Since we expand only different states as we run DFS-G, the number of states expanded is the same.
+
+\section{ID-DFS}
+\subsection{}
+Implemented the ID-DFS by calling DFS-L with increasing depth starting from 0 depth.
+
+\subsection{}
+We got that the total expanded nodes (sum of all nodes expanded in all depths runs) is 186.\\
+This is the summation of the following list which stands for number of expanded nodes in each ID-DFS iteration (increasing depth):\\
+expanded\_nodes = [1, 4, 8, 13, 19, 24, 27, 28, 30, 32]
+
+\subsection{}
+As we repeat the same expanded nodes when we increase the depth (and add more new states we didn't reach at the max depth), the amount of different states developed is actually the last iteration expanded nodes calculation. In our environment and start state, as we saw on previous section, these are 32 different states.
+
+\subsection{}
+The ID-DFS advantage compared to DFS-G is that it's complete and admissible, while DFS-G on finite state space is only complete.\\
+The disadvantage of ID-DFS is that it expands the same nodes multiple time and not just once as in DFS-G.
+
+\subsection{}
+The advantage of ID-DFS compared to BFS is its memory complexity. In ID-DFS we have $O(bD)$ (b - branching factor, D - is maximal depth from start state as we run DFS-G on finite state space), while in BFS it's $O(b^d)$ (d - optimal path depth).\\
+The disadvantage of ID-DFS compared to BFS-G is that it expands the same nodes several times while BFS-G expands each node only once.
 
 \end{document}
 

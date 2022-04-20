@@ -55,7 +55,8 @@ $$\{Taxi\wedge Passenger \wedge Destination\in G\} \cup $$
 $$\{Taxi\wedge Passenger \wedge Destination\in B\} \} \Rightarrow$$
 $$|G|=4$$
 \subsection{}
-The Domain of the "North" operation are all the states. There are states in which the taxi will stay at the same state if it goes north.
+The Domain of the "North" operation are all the states.\\
+There are states in which the taxi will stay at the same state if it goes north.\\
 More formally:
 $$Domain(o_1="North")\equiv\{s\in S | o_1(s)\neq \phi\} = S$$
 One can think that it's illegal to go north on the top row of the grid world or when  there are horizontal walls north to a reachable grid cell. But the env allows the taxi to go north with reward -1.
@@ -102,22 +103,23 @@ If our algorithms of search will maintain the CLOSED lookup table, we can easily
 \subsection{}
 We've implemented the BFS-G in code (not tree search).\\
 That is, Besides the frontier (the OPEN queue implemented with python list), we maintain a set of states that were already reached (the CLOSE set as described in the book).\\
-We've optimized the number of nodes created when expanding some node in the frontier by checking if its neighbor state was already reached.\\
+We've optimized the number of nodes created when expanding some node in the frontier by checking if its neighbor state was already reached or in frontier.\\
+A helper set of frontier (open) states was added, although we could check existence of the node in nodes queue (for simplicity of checking vs reached/frontier states' sets)
 We've added also some counters for the created and expanded nodes through the search.\\
 
 \subsection{}
-The amount of states expanded were 31. If we've used tree search it would have been $b^d=6^10=60,466,176$ , when b is the branching factor (number of possible operations) and d is the shortest path of the goal state from the initial state\\
+The amount of states expanded were 31. If we've used tree search it would have been $b^d=6^{10}=60,466,176$ , when b is the branching factor (number of possible operations) and d is the shortest path of the goal state from the initial state\\
 BTW, the amount of created nodes was 36 (about 5 nodes remained in the frontier)\\
 
 \subsection{}
-This is the same as previous section as we've optimized to create only none reached (not in CLOSE set) states.
+This is the same as previous section as we've optimized to create only none reached (not in CLOSE set) and none frontier (open) states.
 
 \subsection{}
 The main advantage of the BFS/BFS-G compared to DFS (w/o backtracking) is that it's a complete (guaranteed to find a path to the goal) and optimal (that path is the optimal path to the goal state), while DFS (tree search) isn't as it may stuck in infinite loops repeating the same states.\\
 
-In our taxi env, the state space is finite, so if we used DFS-G with graph search, we would have found the solution but it may not be optimal.\\
+In our taxi env, the state space is finite, so if we use DFS-G with graph search (next section), we will found the solution but it may not be optimal.\\
 
-The disadvantage of BFS is its memory consumption which is $O(b^d)$ while the DFS-G $O(bD)$ (with backtracking $O(D)$) When D is the max depth of the taxi env when we start from some state (bounded by the state space size). DFS with tree search may not end and have an infinite memory consumption as we can repeat the same state in the tree.
+The disadvantage of BFS is its memory consumption which is $O(b^d)$ while the DFS-G $O(bD)$ (with backtracking $O(D)$) When D is the max depth of the taxi env when we start from some state (bounded by the state space size). DFS with tree search may not end and have an infinite memory consumption as we can repeat the same state in the tree (circles). One can run DFG-G or add some circles detection mechanisms (going back several parent nodes for example) as described in the course book.
 
 \subsection{}
 Yes. In the taxi environment it will always find the optimal solution, as we saw in the lecture,\\

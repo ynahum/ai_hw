@@ -3,6 +3,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{algpseudocode}
 
 \graphicspath{ {./} }
 
@@ -83,7 +84,7 @@ If the agent does the optimal actions by chance, we can see the optimal path is:
 2. 1 action to Pickup\\
 3. 4 North actions\\
 4. 1 action to Dropoff\\
-Therefore, we have total of 11 actions at the optimal path.
+Therefore, we have total of 10 actions at the optimal path.
 \subsection{}
 As we wrote on the previous section, the optimal path is:
 (North, North, West, South, South, Pickup, North, North, North, North, Dropoff)
@@ -169,5 +170,40 @@ The disadvantage of ID-DFS compared to BFS-G is that it expands the same nodes s
 \includegraphics[scale=1]{id_dfs_plot.JPG}\\
 We can see from the graph above that as the depth increases the amount of expanded nodes increases as we go deeper at each iteration of ID-DFS and expand states we haven't visited before due to limited depth.
 
+\section{W-A*}
+\subsection{}
+Implemented the W-A* in code.\\
+When w=0.5, we get the A* search.
+\subsection{}
+Yes. we can expand a reached state (after it's in the CLOSE set) and re-add it to OPEN and expand again:\\
+\begin{algorithmic}
+\If{s not in OPEN and not in CLOSE}\\
+    ...
+\ElsIf {s in OPEN}\\
+    ...
+\Else \Comment{s in CLOSED}\\
+    \If{$new\_g <  n\_curr.g()$}
+        \State n\_curr \gets update\_node(s, n, new\_g ,new\_g + h(s))\\
+        \State OPEN.insert(n\_curr)
+        \State CLOSED.remove(n\_curr)
+    \EndIf
+\EndIf 
+\end{algorithmic}
+As shown in pseudo code above, when the next state (neighbor of the now expanded node) is already in CLOSE set we $\textbb{update}$ it's f value and re-add it to the OPEN set.
+BTW, In case it's in OPEN we also update it.
+
+\subsection{}
+When called with the null heuristic we get the UCS solution with 34 states expanded with the optimal cost (10 actions as before, with total reward of 11).
+
+\subsection{}
+The optimal cost defined (as was defined in BFS) is the smallest amount of actions to take from start state to goal state. We define the cost of each action as 1.\\
+The first 2 heuristics are admissible while the last 2 are not.\\
+1. $\textbb{Greedy}$:\\
+Since our closest state before the goal is the state just before we drop the passenger at its destination (and thus with the smallest cost as we defined it).\\
+We get $\forall s\in S, s \neq goal\_state$ we have $1 \leq h^*(s) = g(s)$\\
+Thus, the Greedy heuristic is admissible as $h(goal\_state) = 0$ and $\forall s\in S, s \neq goal\_state$  we have $h(s) \leq h^*(s) = g(s)$. 
+
+\subsection{}
+\includegraphics[scale=1]{w_graph.JPG}\\
 \end{document}
 

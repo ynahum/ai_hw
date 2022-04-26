@@ -128,8 +128,9 @@ Yes. In the taxi environment it will always find the optimal solution, as we saw
 BFS finds the shortest path (number of edges) to any state in the env.\\
 In our case, the taxi env, the edges (actions) doesn't have the same cost but we will still find the optimal solution as the shortest path in edges is also the shortest path in cost.
 \subsubsection*{Proof}
-Completeness: Assuming a solution of cost (depth) d exists. BFS will return the solution before exposing the d+1 layer, We know it will reach the d+1 layer as it works in layers and we can by induction prove that it finds all the nodes in the next layer.
-Optimal: Assume that a solution of cost (depth) d exists and the BFS returns a none optimal solution of cost d’ > d. It will return the optimal solution before exposing the d+1 layer so we get a contradiction.
+Completeness: Assuming a solution of cost (depth) d exists. BFS will return the solution before exposing the d+1 layer, We know it will reach the d+1 layer as it works in layers and we can by induction prove that it finds all the nodes in the next layer.\\
+Optimal: Assume that a solution of cost (depth) $d$ exists and the BFS returns a none optimal solution of cost $d’ > d$.\\
+It will return the optimal solution before exposing the $d+1$ layer so we get a contradiction.\qed
 
 \section{DFS}
 
@@ -183,13 +184,13 @@ Yes. we can expand a reached state (after it's in the CLOSE set) and re-add it t
     ...
 \Else \Comment{s in CLOSED}\\
     \If{$new\_g <  n\_curr.g()$}
-        \State n\_curr \gets update\_node(s, n, new\_g ,new\_g + h(s))\\
-        \State OPEN.insert(n\_curr)
-        \State CLOSED.remove(n\_curr)
+        \State $n\_curr \gets update\_node(s, n, new\_g ,new\_g + h(s))$
+        \State $OPEN.insert(n\_curr)$
+        \State $CLOSED.remove(n\_curr)$
     \EndIf
 \EndIf 
 \end{algorithmic}
-As shown in pseudo code above, when the next state (neighbor of the now expanded node) is already in CLOSE set we $\textbb{update}$ it's f value and re-add it to the OPEN set.
+As shown in pseudo code above, when the next state (neighbor of the now expanded node) is already in CLOSE set we {\textit{\textbf{update}}} it's f value and re-add it to the OPEN set.
 BTW, In case it's in OPEN we also update it.
 
 \subsection{}
@@ -198,12 +199,26 @@ When called with the null heuristic we get the UCS solution with 34 states expan
 \subsection{}
 The optimal cost defined (as was defined in BFS) is the smallest amount of actions to take from start state to goal state. We define the cost of each action as 1.\\
 The first 2 heuristics are admissible while the last 2 are not.\\
-1. $\textbb{Greedy}$:\\
-Since our closest state before the goal is the state just before we drop the passenger at its destination (and thus with the smallest cost as we defined it).\\
-We get $\forall s\in S, s \neq goal\_state$ we have $1 \leq h^*(s) = g(s)$\\
-Thus, the Greedy heuristic is admissible as $h(goal\_state) = 0$ and $\forall s\in S, s \neq goal\_state$  we have $h(s) \leq h^*(s) = g(s)$. 
+
+1. {\textit{\textbf{Greedy}}}:\\
+Since our closest state before the goal is the state just before we drop the passenger at its destination (and thus with the smallest cost to go as we defined it).\\
+We get $$\forall s\in S, s \neq goal\_state \text{ we have } 1 = h(s) \leq h^*(s) = cost\_to\_go(s)$$ and $$s=goal\_state, 0=h(s)=h^*(s) = 0$$\\
+Thus, the Greedy heuristic is admissible.\qed
+
+2. {\textit{\textbf{Manhatan Sum}}}:\\
+We can relax the problem (apply less constraints) and look at it as if there are no walls between different locations on the map, providing we can still move only North/South/West/East.\\
+Thus, this is a tighter lower bound relative to the Greedy heuristic and therefore more informed.\\
+The Manhatan Sum is admissible as at the goal state the location of the passenger is the same as the location of the taxi $MD(s,loc_{passenger}) = 0$ and the same as the location of the drop-off $MD(loc_{passenger},loc_{drop-off}) = 0$.\\
+Thus, for the goal state we have 
+$$s=goal\_state, 0=h(s)=h^*(s) = 0$$
+The MD by definition is zero or positive, so:
+$$\forall s\in S \text{ we have } 0 \leq h(s) $$
+As we wrote above, the actual cost to go can only be greater once we add walls to the map (As in our original problem), so in total:
+$$\forall s\in S \text{ we have } 0 \leq h(s) \leq h^*(s) = cost\_to\_go(s)$$
+Moreover, the MD doesn't take into consideration the actions of pickup and drop-off so it's even strictly less then the cost to go (and we could even create a better informed heuristic).\qed
 
 \subsection{}
 \includegraphics[scale=1]{w_graph.JPG}\\
+
 \end{document}
 

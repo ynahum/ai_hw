@@ -169,11 +169,20 @@ The advantage of ID-DFS compared to BFS is its memory complexity. In ID-DFS we h
 The disadvantage of ID-DFS compared to BFS-G is that it expands the same nodes several times while BFS-G expands each node only once.
 
 \subsection{}
-\includegraphics[scale=1]{id_dfs_plot2.JPG}\\
-\includegraphics[scale=1]{id_dfs_plot.JPG}\\
-We can see from the graph above that as the depth increases the amount of expanded nodes increases as we go deeper at each iteration of ID-DFS and expand states we haven't visited before due to limited depth.
+The following list stands for number of expanded nodes in each ID-DFS iteration (increasing depth):\\
+expanded\_nodes = [1, 4, 8, 13, 19, 24, 27, 28, 30, 32]\\
+
+\includegraphics[scale=1]{id_dfs_plot2.JPG}
+
+As we go deeper at each iteration of ID-DFS, we expand states that we haven't visited before due to limited depth.
+
+\includegraphics[scale=1]{id_dfs_plot.JPG}
+
+Above, we see the accumulation of expanded nodes vs max depth.
 
 \section{W-A*}
+\subsection{}
+see 4.6 section
 \subsection{}
 Implemented the W-A* in code.\\
 When w=0.5, we get the A* search.

@@ -142,7 +142,8 @@ This is not surprising, as DFS-G may return some solution which is not optimal.
 Again, DFS-G \textbf{\emph{on finite state space}} , as in the taxi world, is a complete search algorithm (DFS tree search is not since we can get stuck in a loop) but not optimal. 
 
 \subsection{}
-The number of states expanded when we didn't find the optimal path were 96.
+The number of states expanded when we didn't find the optimal path were 96.\\
+BTW, we experimented with reversing the list of neighbors of the node expanded and got much better results. so we can see DFS is not proven to get the optimal results.
 
 \subsection{}
 Since we expand only different states as we run DFS-G, the number of states expanded is the same.
@@ -215,7 +216,31 @@ The MD by definition is zero or positive, so:
 $$\forall s\in S \text{ we have } 0 \leq h(s) $$
 As we wrote above, the actual cost to go can only be greater once we add walls to the map (As in our original problem), so in total:
 $$\forall s\in S \text{ we have } 0 \leq h(s) \leq h^*(s) = cost\_to\_go(s)$$
-Moreover, the MD doesn't take into consideration the actions of pickup and drop-off so it's even strictly less then the cost to go (and we could even create a better informed heuristic).\qed
+Moreover, the MD doesn't take into consideration the actions of pickup and drop-off so it's even strictly less then the cost to go for all states that are different from the goal (we can even create a better informed heuristic).\qed
+
+3. {\textit{\textbf{Pickup Sum}}}:\\
+The Pickup Sum heuristic is not admissible as the cost to go on goal state might be different than 0 when the pickup location is different from the drop of location.\\
+The cost to go at goal state is by definition 0, and $$MD(loc_{pick-up},loc_{drop-off}) > 0$$\\
+In our main test case in the wet code:
+$$MD(loc_{pick-up},loc_{drop-off})=4$$
+So to conclude, it's not admissible as $$h(goal_state) > h*(goal_state) = cost\_to\_go(goal_state) = 0$$
+\qed
+
+4. {\textit{\textbf{Pickup Mult}}}:\\
+The Pickup Mult heuristic is not admissible as the cost to go on goal state might be different than 0 when the pickup location is different from the drop of location.\\
+The cost to go at goal state is by definition 0, and $$MD(loc_{pick-up},loc_{drop-off}) > 0$$\\
+And also
+$$MD(goal\_state,loc_{pick-up}) > 0$$\\
+Thus the multiplication is also positive.\\
+In our main test case in the wet code:
+$$MD(loc_{pick-up},loc_{drop-off})=4, MD(goal\_state,loc_{pick-up})=4$$
+(when distance of goal state to pickup is actually the also the drop-off location).
+So to conclude, it's not admissible as $$h(goal\_state) > h*(goal\_state) = cost\_to\_go(goal\_state) = 0$$
+\qed
+
+The most informed heuristic between the above is the {\textit{\textbf{Manhatan Sum}}} as it's the closest to the real cost to go from any state.
+
+Moreover, the distance doesn't take into consideration the actions of pickup and drop-off so it's even strictly less then the cost to go for all states that are different from the goal (we can even create a better informed heuristic by adding 1 or 2 to none goal state).
 
 \subsection{}
 \includegraphics[scale=1]{w_graph.JPG}\\

@@ -263,11 +263,11 @@ In the blind search, with the null heuristic ($W=0$), we've expanded 34 nodes  e
 In total we've saved $34-13=21$ expansions saved.
 
 \subsection{}
-Implemented in the notebook. We've added the parameter to our common code for all A* version ($WA*$ and $A*\epsilon$)
+Implemented in the notebook. We've added the parameter to our common code for all A* version ($W-A*$ and $A*-\epsilon$)
 
 \subsection{}
 
-When we run WA* with different W values $W\in[0,1]$, we get the following graph:\\
+When we run W-A* with different W values $W\in[0,1]$, we get the following graph:\\
 \includegraphics[scale=1]{w_graph.JPG}\\
 
 We have printed the cost in time steps. The reward is the same for all as in all we've found the optimal path (10 time steps, reward=11)
@@ -280,12 +280,17 @@ The reason for that is that in A* we don't finish our search when we encounter t
 
 It is better to work with $W\in[0.5,1]$ as A* ($W=0.5$) uses the heuristic w/o lose of optimal cost (still complete and admissible search) when the heuristic is admissible. We can also view the improvement in speed as we increase W $W\in[0,0.5]$.\\
 
-In the region $W\in[0.5,1]$ in general $WA*$, we have a trade-off between speed (approaching Greedy search) and A*.\\ That is, we risk having none optimal solution but with faster (less expansions) reach to goal when we increase W above 0.5.\\
+In the region $W\in[0.5,1]$ in general $W-A*$, we have a trade-off between speed (approaching Greedy search) and A*.\\ That is, we risk having none optimal solution but with faster (less expansions) reach to goal when we increase W above 0.5.\\
 
 However, if we take $w_1<w_2$ in our graph, we can see that the solution we get with both is the same (for example when $(w_1,w_2)=(0.4,0.5)$ or $(w_1,w_2)=(0.5,0.6)$), we can also see that for such pairs the number of expanded nodes doesn't necessarily decrease as we increase $W$ (for example when $(w_1,w_2)=(0.5,0.6)$ or $(w_1,w_2)=(0.6,0.7)$).\\
 
 In our diagram, we don't see that we lose/gain from changing $W$ in $(0.5,1]$. It returns the optimal path and it does it with the same amount of expanded nodes as A*.
 
+\section{A*-epsilon}
+\subsection{}
+Implemented in the notebook. We've added the parameter to our common code for all A* version ($W-A*$ and $A*-\epsilon$)
+
+\subsection{}
 
 
 

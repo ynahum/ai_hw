@@ -288,11 +288,19 @@ In our diagram, we don't see that we lose/gain from changing $W$ in $(0.5,1]$. I
 
 \section{A*-epsilon}
 \subsection{}
-Implemented in the notebook. We've added the parameter to our common code for all A* version ($W-A*$ and $A*-\epsilon$)
+Implemented in the notebook. We've added the parameter to our common code for all A* version ($WA^*$ and $A^*\epsilon$)
+
+\subsection{}
+We've used the {\textit{\textbf{Greedy}}} heuristic from previous section as our admissible heuristic.\\
+For the none admissible heuristic, we've took improved (more informed) {\textit{\textbf{Manhatan Sum}}} by +1 or +2 (depends on state) since originally we didn't take the drop/pick operations distance.\\
+Then, we multiplied it by 1.1 and it has become none admissible any more as we've got  $h(s) > h^*(s) = g(s)$.
 
 \subsection{}
 
+When we run $A^*\epsilon$ with different W values $W\in[0,1]$ and $\epsilon = 0.3$, we get the following graph over the none admissible heuristic:\\
+\includegraphics[scale=1]{hw1/w_graph_more_accurate.JPG}\\
 
+We can see that when W=1 the amount of expanded nodes (for some random selection from focal set) was reduced from 13 to 10 (the minimum as possible, as if we selected the nodes on the optimal path only).
 
 
 \end{document}

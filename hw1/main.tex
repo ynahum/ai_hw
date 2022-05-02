@@ -303,7 +303,9 @@ Then, we multiplied it by 1.1 and it has become none admissible any more as we'v
 When we run $A^*\epsilon$ with different W values $W\in[0,1]$ and $\epsilon = 0.3$, we get the following graph over the none admissible heuristic:\\
 \includegraphics[scale=1]{hw1/w_graph_more_accurate.JPG}\\
 
-We can see that when W=1 the amount of expanded nodes (for some random selection from focal set) was reduced from 13 to 10 (the minimum as possible, as if we selected the nodes on the optimal path only).
+We can see that when $W=1$ the amount of expanded nodes (for some random selection from focal set) was reduced from 13 to 10 (the minimum as possible, as if we selected the nodes on the optimal path only).
+
+Moreover, when running $A^*\epsilon$ with the admissible heuristic that we chose ({\textit{\textbf{Greedy}}}) with the same $W=1$ and $\epsilon = 0.3$ we got 30 nodes were expanded vs the none admissible with only 10 (expanding only the nodes on the optimal path).
 
 
 \end{document}

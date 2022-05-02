@@ -305,8 +305,10 @@ When we run $A^*\epsilon$ with different W values $W\in[0,1]$ and $\epsilon = 0.
 
 We can see that when $W=1$ the amount of expanded nodes (for some random selection from focal set) was reduced from 13 to 10 (the minimum as possible, as if we selected the nodes on the optimal path only).
 
-Moreover, when running $A^*\epsilon$ with the admissible heuristic that we chose ({\textit{\textbf{Greedy}}}) with the same $W=1$ and $\epsilon = 0.3$ we got 30 nodes were expanded vs the none admissible with only 10 (expanding only the nodes on the optimal path).
+Moreover, when running $A^*\epsilon$ with the admissible heuristic that we chose ({\textit{\textbf{Greedy}}}) with the same $W=1$ and $\epsilon = 0.3$ we got 30 nodes were expanded vs the none admissible with only 10 (expanding only the nodes on the optimal path).\\
+\includegraphics[scale=1]{hw1/w_graph_eps_addmis.JPG}\\
 
+When we change the $A*$ to $A*\epsilon$ we sacrifice possible loss of optimal cost finding (not admissible)  in order to add greediness for faster move towards the goal (with the guarantee of having an upper bounded degradation in the optimal cost found up to $C \leq C^*(1+\epsilon)$).
 
 \end{document}
 

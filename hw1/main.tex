@@ -180,12 +180,12 @@ As we go deeper at each iteration of ID-DFS, we expand states that we haven't vi
 
 Above, we see the accumulation of expanded nodes vs max depth.
 
-\section{W-A*}
+\section{$WA^*$}
 \subsection{}
 see 4.6 section
 \subsection{}
-Implemented the W-A* in code.\\
-When w=0.5, we get the A* search.
+Implemented the $WA^*$ in code.\\
+When w=0.5, we get the $A^*$ search.
 \subsection{}
 Yes. we can expand a reached state (after it's in the CLOSE set) and re-add it to OPEN and expand again:\\
 \begin{algorithmic}
@@ -205,7 +205,7 @@ As shown in pseudo code above, when the next state (neighbor of the now expanded
 BTW, In case it's in OPEN we also update it.
 
 \subsection{}
-When called with the null heuristic we get the UCS solution with 34 states expanded with the optimal cost (10 actions as before, with total reward of 11).
+When called with the null heuristic we get the UCS solution with 34 states expanded with the optimal cost (10 actions as before, with total reward of 11). Note that since the $A^*$ is implemented for admissible heuristic, the expanded nodes are more than in BFS, as we finish only when we expand the goal state (not when encountered as in BFS with 31 nodes expanded).
 
 \subsection{}
 The optimal cost defined (as was defined in BFS) is the smallest amount of actions to take from start state to goal state. We define the cost of each action as 1.\\
@@ -233,7 +233,7 @@ The Pickup Sum heuristic is not admissible as the cost to go on goal state might
 The cost to go at goal state is by definition 0, and $$MD(loc_{pick-up},loc_{drop-off}) > 0$$\\
 In our main test case in the wet code:
 $$MD(loc_{pick-up},loc_{drop-off})=4$$
-So to conclude, it's not admissible as $$h(goal_state) > h*(goal_state) = cost\_to\_go(goal_state) = 0$$
+So to conclude, it's not admissible as $$h(goal\_state) > h*(goal_state) = cost\_to\_go(goal\_state) = 0$$
 \qed
 
 4. {\textit{\textbf{Pickup Mult}}}:\\
@@ -248,9 +248,12 @@ $$MD(loc_{pick-up},loc_{drop-off})=4, MD(goal\_state,loc_{pick-up})=4$$
 So to conclude, it's not admissible as $$h(goal\_state) > h*(goal\_state) = cost\_to\_go(goal\_state) = 0$$
 \qed
 
-The most informed heuristic between the above is the {\textit{\textbf{Manhatan Sum}}} as it's the closest to the real cost to go from any state.
+Between the 2 admissible heuristics ({\textit{\textbf{Manhatan Sum}}} and  {\textit{\textbf{Greedy}}}) we cannot say that one is more admissible than the other as on the state right before the drop and reaching the goal state we have $0 = MD(s) < Gready(s) = 1$, while on every other state $MD(s) \geq Gready(s)$ ( the definition for more informed stands that it's $MD(s) \geq Gready(s)$ for all states).
 
 Moreover, the distance doesn't take into consideration the actions of pickup and drop-off so it's even strictly less then the cost to go for all states that are different from the goal (we can even create a better informed heuristic by adding 1 or 2 to none goal state).
+
+If we fix a bit the MD distance and add 1 or 2 (depends if passenger was picked up or not yet), the most informed heuristic between the above is the {\textit{\textbf{Manhatan Sum}}} as it's the closest to the real cost to go from any state.
+
 
 \subsection{}
 
@@ -286,7 +289,7 @@ However, if we take $w_1<w_2$ in our graph, we can see that the solution we get 
 
 In our diagram, we don't see that we lose/gain from changing $W$ in $(0.5,1]$. It returns the optimal path and it does it with the same amount of expanded nodes as A*.
 
-\section{A*-epsilon}
+\section{$A^*\epsilon$}
 \subsection{}
 Implemented in the notebook. We've added the parameter to our common code for all A* version ($WA^*$ and $A^*\epsilon$)
 

@@ -158,17 +158,21 @@ This is the summation of the following list which stands for number of expanded 
 expanded\_nodes = [1, 4, 8, 13, 19, 24, 27, 28, 30, 32]
 
 \subsection{}
+
 As we repeat the same expanded nodes when we increase the depth (and add more new states we didn't reach at the max depth), the amount of different states developed is actually the last iteration expanded nodes calculation. In our environment and start state, as we saw on previous section, these are 32 different states.
 
 \subsection{}
+
 The ID-DFS advantage compared to DFS-G is that it's complete and admissible, while DFS-G on finite state space is only complete.\\
 The disadvantage of ID-DFS is that it expands the same nodes multiple time and not just once as in DFS-G.
 
 \subsection{}
+
 The advantage of ID-DFS compared to BFS is its memory complexity. In ID-DFS we have $O(bD)$ (b - branching factor, D - is maximal depth from start state as we run DFS-G on finite state space), while in BFS it's $O(b^d)$ (d - optimal path depth).\\
 The disadvantage of ID-DFS compared to BFS-G is that it expands the same nodes several times while BFS-G expands each node only once.
 
 \subsection{}
+
 The following list stands for number of expanded nodes in each ID-DFS iteration (increasing depth):\\
 expanded\_nodes = [1, 4, 8, 13, 19, 24, 27, 28, 30, 32]\\
 
@@ -182,11 +186,16 @@ Above, we see the accumulation of expanded nodes vs max depth.
 
 \section{$WA^*$}
 \subsection{}
+
 see 4.6 section
+
 \subsection{}
+
 Implemented the $WA^*$ in code.\\
 When w=0.5, we get the $A^*$ search.
+
 \subsection{}
+
 Yes. we can expand a reached state (after it's in the CLOSE set) and re-add it to OPEN and expand again:\\
 \begin{algorithmic}
 \If{s not in OPEN and not in CLOSE}\\
@@ -205,16 +214,18 @@ As shown in pseudo code above, when the next state (neighbor of the now expanded
 BTW, In case it's in OPEN we also update it.
 
 \subsection{}
+
 When called with the null heuristic we get the UCS solution with 34 states expanded with the optimal cost (10 actions as before, with total reward of 11). Note that since the $A^*$ is implemented for admissible heuristic, the expanded nodes are more than in BFS, as we finish only when we expand the goal state (not when encountered as in BFS with 31 nodes expanded).
 
 \subsection{}
+
 The optimal cost defined (as was defined in BFS) is the smallest amount of actions to take from start state to goal state. We define the cost of each action as 1.\\
 The first 2 heuristics are admissible while the last 2 are not.\\
 
 1. {\textit{\textbf{Greedy}}}:\\
 Since our closest state before the goal is the state just before we drop the passenger at its destination (and thus with the smallest cost to go as we defined it).\\
 We get $$\forall s\in S, s \neq goal\_state \text{ we have } 1 = h(s) \leq h^*(s) = cost\_to\_go(s)$$ and $$s=goal\_state, 0=h(s)=h^*(s) = 0$$\\
-Thus, the Greedy heuristic is admissible.\qed
+Thus, the Greedy heuristic is admissible.\qed\\
 
 2. {\textit{\textbf{Manhatan Sum}}}:\\
 We can relax the problem (apply less constraints) and look at it as if there are no walls between different locations on the map, providing we can still move only North/South/West/East.\\
@@ -226,7 +237,7 @@ The MD by definition is zero or positive, so:
 $$\forall s\in S \text{ we have } 0 \leq h(s) $$
 As we wrote above, the actual cost to go can only be greater once we add walls to the map (As in our original problem), so in total:
 $$\forall s\in S \text{ we have } 0 \leq h(s) \leq h^*(s) = cost\_to\_go(s)$$
-Moreover, the MD doesn't take into consideration the actions of pickup and drop-off so it's even strictly less then the cost to go for all states that are different from the goal (we can even create a better informed heuristic).\qed
+Moreover, the MD doesn't take into consideration the actions of pickup and drop-off so it's even strictly less then the cost to go for all states that are different from the goal (we can even create a better informed heuristic).\qed\\
 
 3. {\textit{\textbf{Pickup Sum}}}:\\
 The Pickup Sum heuristic is not admissible as the cost to go on goal state might be different than 0 when the pickup location is different from the drop of location.\\
@@ -234,7 +245,7 @@ The cost to go at goal state is by definition 0, and $$MD(loc_{pick-up},loc_{dro
 In our main test case in the wet code:
 $$MD(loc_{pick-up},loc_{drop-off})=4$$
 So to conclude, it's not admissible as $$h(goal\_state) > h*(goal_state) = cost\_to\_go(goal\_state) = 0$$
-\qed
+\qed\\
 
 4. {\textit{\textbf{Pickup Mult}}}:\\
 The Pickup Mult heuristic is not admissible as the cost to go on goal state might be different than 0 when the pickup location is different from the drop of location.\\
@@ -246,11 +257,11 @@ In our main test case in the wet code:
 $$MD(loc_{pick-up},loc_{drop-off})=4, MD(goal\_state,loc_{pick-up})=4$$
 (when distance of goal state to pickup is actually the also the drop-off location).
 So to conclude, it's not admissible as $$h(goal\_state) > h*(goal\_state) = cost\_to\_go(goal\_state) = 0$$
-\qed
+\qed\\
 
-Between the 2 admissible heuristics ({\textit{\textbf{Manhatan Sum}}} and  {\textit{\textbf{Greedy}}}) we cannot say that one is more admissible than the other as on the state right before the drop and reaching the goal state we have $0 = MD(s) < Gready(s) = 1$, while on every other state $MD(s) \geq Gready(s)$ ( the definition for more informed stands that it's $MD(s) \geq Gready(s)$ for all states).
+Between the 2 admissible heuristics ({\textit{\textbf{Manhatan Sum}}} and  {\textit{\textbf{Greedy}}}) we cannot say that one is more admissible than the other as on the state right before the drop and reaching the goal state we have $0 = MD(s) < Gready(s) = 1$, while on every other state $MD(s) \geq Gready(s)$ ( the definition for more informed stands that it's $MD(s) \geq Gready(s)$ for all states).\\
 
-Moreover, the distance doesn't take into consideration the actions of pickup and drop-off so it's even strictly less then the cost to go for all states that are different from the goal (we can even create a better informed heuristic by adding 1 or 2 to none goal state).
+Moreover, the distance doesn't take into consideration the actions of pickup and drop-off so it's even strictly less then the cost to go for all states that are different from the goal (we can even create a better informed heuristic by adding 1 or 2 to none goal state).\\
 
 If we fix a bit the MD distance and add 1 or 2 (depends if passenger was picked up or not yet), the most informed heuristic between the above is the {\textit{\textbf{Manhatan Sum}}} as it's the closest to the real cost to go from any state.
 
@@ -260,12 +271,14 @@ If we fix a bit the MD distance and add 1 or 2 (depends if passenger was picked 
 Implemented in the notebook the {\textit{\textbf{Manhatan Sum}}} as the chosen\_h
 
 \subsection{}
+
 With the {\textit{\textbf{Manhatan Sum}}} heuristic we've chosen (and with $W=0.5$ for pure A*) we've expanded only 13 nodes before expanding the goal state and returning the optimal path.\\
 In the blind search, with the null heuristic ($W=0$), we've expanded 34 nodes  expanded (BFS-G got it with 31 nodes expanded but UCS as implemented for A* for admissible heuristics must end only after expanding the goal state. if it was consistent it was less as in BFS-G).
 
 In total we've saved $34-13=21$ expansions saved.
 
 \subsection{}
+
 Implemented in the notebook. We've added the parameter to our common code for all A* version ($W-A*$ and $A*-\epsilon$)
 
 \subsection{}
@@ -290,10 +303,13 @@ However, if we take $w_1<w_2$ in our graph, we can see that the solution we get 
 In our diagram, we don't see that we lose/gain from changing $W$ in $(0.5,1]$. It returns the optimal path and it does it with the same amount of expanded nodes as A*.
 
 \section{$A^*\epsilon$}
+
 \subsection{}
+
 Implemented in the notebook. We've added the parameter to our common code for all A* version ($WA^*$ and $A^*\epsilon$)
 
 \subsection{}
+
 We've used the {\textit{\textbf{Greedy}}} heuristic from previous section as our admissible heuristic.\\
 For the none admissible heuristic, we've took improved (more informed) {\textit{\textbf{Manhatan Sum}}} by +1 or +2 (depends on state) since originally we didn't take the drop/pick operations distance.\\
 Then, we multiplied it by 1.1 and it has become none admissible any more as we've got  $h(s) > h^*(s) = g(s)$.
@@ -310,5 +326,37 @@ Moreover, when running $A^*\epsilon$ with the admissible heuristic that we chose
 
 When we change the $A*$ to $A*\epsilon$ we sacrifice possible loss of optimal cost finding (not admissible)  in order to add greediness for faster move towards the goal (with the guarantee of having an upper bounded degradation in the optimal cost found up to $C \leq C^*(1+\epsilon)$).
 
+\section{Test like question}
+
+\subsection{Should-Return in $A^*$-Parallel}
+
+1.\\
+
+{\textit{\textbf{Complete}}} - as we find the goal state and return it (the first time we encounter it)\\
+
+{\textit{\textbf{Not admissible}}} - as we return at the first time we find the goal state. but there might be a better path to the Goal state which we haven't expanded yet. Meaning, we've added to open the goal state in a parallel worker process which has a lower f value and due to race we've returned the goal state with higher f value (which is the real cost g value as $h(goal\_state)$ = 0)\\
+\\
+2.\\
+
+{\textit{\textbf{Not Complete}}} - as there might be a busy worker in parallel and we return False. Thus, we might miss the only path that reaches the goal state and never return it.\\
+
+{\textit{\textbf{Not admissible}}} - as it's not complete\\
+\\
+3.\\
+
+{\textit{\textbf{Complete}}} - as opposed to prev solution (2), we push the solution to open before we check if all workers are idle, this way we avoid the chance that we won't get back to the goal state due to some parallel worker still working to expand some other nodes. This way, even if we return False now, eventually some worker will be the last one to expand the goal state while all other workers are idle and we will return a path to the goal.\\
+
+{\textit{\textbf{Not admissible}}} - the solution found might not be the optimal one as there might be some worker that reached the goal last and pushed to open but the f=g value we currently have is not the optimal. Meaning, another worker pushed to open the goal state from a different path with lower f=g value and we missed it as all workers were idle when we checked.\\
+\\
+4.\\
+
+{\textit{\textbf{Complete}}} - once we find a goal state as in (3) we push it to the open again to guarantee that it will be poped from heap eventually as the last time might be when the goal state is the only one in open and thus the last condition when we check the front f value vs the current goal state must be True and we return this path to goal.\\
+
+{\textit{\textbf{Admissible}}} - the solution returned is also optimal as if we pushed the to open after all workers are idle (no more nodes to add to open that might contain another path to goal state) and thus all possible paths to goal with different f values are in open, what's left is to add current goal node again to open (in order to compare with other goal paths f values) and if it has the lowest f value (Get-Front(open) of the heap returns it) we have found the goal node that has the optimal parent and return it.\\ if it's not the minimum f value, that is we have another goal node with better path to it, we will not return it and wait for the master process to pop next (other none goal node) the best goal state with the minimum f value and return it.
+
+\subsection{Order of expansion}
+
+
+   
 \end{document}
 

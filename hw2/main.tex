@@ -4,6 +4,7 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{algpseudocode}
+\usepackage{comment}
 
 \graphicspath{ {./} }
 
@@ -34,14 +35,52 @@
 \subsection*{A.1}
 
 We will use the following parameters:\\
-1. Agent location.\\
+1. Agent's location.\\
 2. Passengers' locations.\\
 3. Agent's cash.\\
 4. Gas stations locations.\\
+5. Remaining turns
 
-We will calculate Manhattan Distances (MD) from each taxi agent to each passenger $MD(s,loc_{passenger})$ and add to it the distance to its destination $MD(loc_{passenger},loc_{drop-off})$.\\
+We have some planning problem with constraints that we can take into account.\\
+We have full information of the game at each state (from the env).\\
+Our Greedy agent will calculate Manhattan Distances (MD) to each passenger $MD(s,loc_{passenger})$\\
+It will calculate the same for the other taxi agent to make sure he can take one of the passengers or both before him.\\
+We also calculate the reward for a successful drop (which might be negative if the passenger is far and its trip is short). That is, $\forall s \in S $:
+$$V(s,agent) =  N - MD_{agent}(s,loc_{pickup}) = $$
+$$2 * MD_{agent}(loc_{pickup},loc_{drop-off}) - MD_{agent}(loc_{pickup},loc_{drop-off}) - MD_{agent}(s,loc_{pickup}) = $$
+$$ MD_{agent}(loc_{pickup},loc_{drop-off}) - MD_{agent}(s,loc_{pickup})$$
+
+We also define the following:\\
+$MD_{0}(s,loc_{p1})$ as the MD from our agent to passenger 1.\\
+$MD_{0}(s,loc_{p2})$ as the MD from our agent to passenger 2.\\
+$MD_{1}(s,loc_{p1})$ as the MD from the other agent to passenger 1.\\
+$MD_{1}(s,loc_{p2})$ as the MD from the other agent to passenger 2.\\
+$V_{p1}(s,0)$ as the reward of our agent when taking passenger 1.\\
+$V_{p2}(s,0)$ as the reward of our agent when taking passenger 2.\\
+$V_{maxp}(s,0)$ as the reward of our agent when taking the most rewarding passenger.\\
+$V_{p1}(s,1)$ as the reward of the other agent when taking passenger 1.\\
+$V_{p2}(s,1)$ as the reward of the other agent when taking passenger 2.\\
+$V_{maxp}(s,1)$ as the reward of the other agent when taking the most rewarding passenger.\\
+
+We follow the pseudo code below as our strategy:\\
+possible\_p1 = false\\
+if $MD_{0}(s,loc_{p1}) < MD_{1}(s,loc_{p1})$  possible\_p1 = true\\
+possible\_p2 = false\\
+if $MD_{0}(s,loc_{p2}) < MD_{1}(s,loc_{p2})$  possible\_p2 = true\\
+
+
+\begin{comment}
+$V_{maxp}(s,0) = \max(V_{p1}(s,0),V_{p2}(s,0))$\\
+$V_{maxp}(s,1) = \max(V_{p1}(s,1),V_{p2}(s,1))$\\
+If $V_{maxp}(s,0) > V_{p2}(s,0)$ and 
+1. We can fulfill the drop with our gas and remaining turns - if the gas units we have is more than needed we pick 
+If both passengers are closer to our agent than to the other taxi agent, we will select the most rewarding drop:\\
+
+This is the cost of trip.\\
+If we manage to get the passenger to its destination (we assume we take him
 We calculate that for each passenger relative to each agent.\\
-As a greedy agent, we go to the passenger that will give us the best value (closest and thus no gas wasting) w/o actually caring about the other agent actions (although we can consider his worst action, but it complicates the agent value estimation).\\
+As a greedy agent, we go to the passenger that will give us the best value (closest and thus no
+$MD(s,loc_{passenger})$gas wasting) w/o actually caring about the other agent actions (although we can consider his worst action, but it complicates the agent value estimation).\\
 We need to take into consideration some constraints. otherwise, we go to the gas station:\\
 1. The cash after the planned drop should be enough to go the closest gas station from the drop location. If not, we consider the other passenger.
 2. We check the same constraint as before on the new passenger's drop location vs the closest gas station location. If not, we ..
@@ -51,6 +90,6 @@ As the distance is smaller, the value of the state is higher. So we inverse the 
 We may have negative 
  to first passenger and then to its destination and the same to the second passenger . We calculate the same for the other agent (to consider who will win).
 2. 
-
+\end{comment}
 \end{document}
 

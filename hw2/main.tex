@@ -1,0 +1,56 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{algpseudocode}
+
+\graphicspath{ {./} }
+
+\newcommand{\rectres}[1]{
+\begin{center}
+\begin{tabular}{ |c| }
+\hline\\
+#1\\
+\\
+\hline
+\end{tabular}
+\end{center}
+}
+
+\newcommand{\qed}{\hfill$\blacksquare$}
+
+\title{Introduction to AI - 236501\\HW2}
+\author{Yair Nahum 034462796\\and\\Hala Awwad 209419134 }
+
+\begin{document}
+
+\maketitle
+
+%\tableofcontents{}
+
+\section*{A - Improved Greedy Agent}
+
+\subsection*{A.1}
+
+We will use the following parameters:\\
+1. Agent location.\\
+2. Passengers' locations.\\
+3. Agent's cash.\\
+4. Gas stations locations.\\
+
+We will calculate Manhattan Distances (MD) from each taxi agent to each passenger $MD(s,loc_{passenger})$ and add to it the distance to its destination $MD(loc_{passenger},loc_{drop-off})$.\\
+We calculate that for each passenger relative to each agent.\\
+As a greedy agent, we go to the passenger that will give us the best value (closest and thus no gas wasting) w/o actually caring about the other agent actions (although we can consider his worst action, but it complicates the agent value estimation).\\
+We need to take into consideration some constraints. otherwise, we go to the gas station:\\
+1. The cash after the planned drop should be enough to go the closest gas station from the drop location. If not, we consider the other passenger.
+2. We check the same constraint as before on the new passenger's drop location vs the closest gas station location. If not, we ..
+
+If the other agent is closer, we will go on the second passenger.
+As the distance is smaller, the value of the state is higher. So we inverse the distance to get a value function for our state by $\frac{1}{d}$
+We may have negative 
+ to first passenger and then to its destination and the same to the second passenger . We calculate the same for the other agent (to consider who will win).
+2. 
+
+\end{document}
+

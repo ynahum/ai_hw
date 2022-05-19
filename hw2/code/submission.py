@@ -7,7 +7,14 @@ class AgentGreedyImproved(AgentGreedy):
     # TODO: section a : 3
 
     def heuristic(self, env: TaxiEnv, taxi_id: int):
+        debug_prints = True
+
         taxi = env.get_taxi(taxi_id)
+        if debug_prints:
+            print(f"taxi.position: {taxi.position}")
+            print(f"taxi is occupied: {env.taxi_is_occupied(taxi_id)}")
+            print(f"taxi.fuel: {taxi.fuel}")
+
         other_taxi_id = (taxi_id + 1) % 2
         other_taxi = env.get_taxi(other_taxi_id)
 
@@ -15,16 +22,23 @@ class AgentGreedyImproved(AgentGreedy):
         fuel_value = taxi.fuel - other_taxi.fuel
         total_value = cash_value + fuel_value
 
+        survival_value = 0
+
         gas_0 = env.gas_stations[0]
         gas_1 = env.gas_stations[1]
 
         cost_taxi_to_gas0 = manhattan_distance(taxi.position, gas_0.position)
         cost_taxi_to_gas1 = manhattan_distance(taxi.position, gas_1.position)
-        if (cost_taxi_to_gas0 >= taxi.fuel ) or (cost_taxi_to_gas1 >= taxi.fuel):
-            if cost_taxi_to_gas0 >= taxi.fuel:
-                total_value -= (cost_taxi_to_gas0 - taxi.fuel)
-            else:
-                total_value -= (cost_taxi_to_gas1 - taxi.fuel)
+        if (cost_taxi_to_gas0 > (taxi.fuel-2)) and (cost_taxi_to_gas1 > (taxi.fuel-2)):
+            survival_value -= 10
+            if debug_prints:
+                print(f"cost_taxi_to_gas0: {cost_taxi_to_gas0}")
+                print(f"cost_taxi_to_gas1: {cost_taxi_to_gas1}")
+                print(f"pre total_value: {total_value}")
+            total_value += survival_value
+            if debug_prints:
+                print(f"post total_value: {total_value}")
+                print("--------------------------------------------------")
             return total_value
 
         taxi_pas_selected = None
@@ -115,12 +129,9 @@ class AgentGreedyImproved(AgentGreedy):
 
         total_value += value_taxi_to_dest_selected
 
-        debug_prints = True
         if debug_prints:
-            print(f"taxi.position: {taxi.position}")
             if select_dest != 0:
                 print(f"taxi_pas_selected.position: {taxi_pas_selected.position}")
-            print(f"taxi is occupied: {env.taxi_is_occupied(taxi_id)}")
 
             print(f"md_taxi_to_pass_selected: {md_taxi_to_pass_selected}")
             print(f"md_pas_to_dest_selected: {md_pas_to_dest_selected}")

@@ -35,61 +35,62 @@
 \subsection*{A.1}
 
 We will use the following parameters:\\
-1. Agent's location.\\
+1. Agents' locations.\\
 2. Passengers' locations.\\
-3. Agent's cash.\\
-4. Gas stations locations.\\
-5. Remaining turns
+3. Agents' cash.\\
+4. Agents' fuel.\\
+5. Gas stations locations.\\
 
-We have some planning problem with constraints that we can take into account.\\
-We have full information of the game at each state (from the env).\\
-Our Greedy agent will calculate Manhattan Distances (MD) to each passenger $MD(s,loc_{passenger})$\\
-It will calculate the same for the other taxi agent to make sure he can take one of the passengers or both before him.\\
-We also calculate the reward for a successful drop (which might be negative if the passenger is far and its trip is short). That is, $\forall s \in S $:
-$$V(s,agent) =  N - MD_{agent}(s,loc_{pickup}) = $$
-$$2 * MD_{agent}(loc_{pickup},loc_{drop-off}) - MD_{agent}(loc_{pickup},loc_{drop-off}) - MD_{agent}(s,loc_{pickup}) = $$
-$$ MD_{agent}(loc_{pickup},loc_{drop-off}) - MD_{agent}(s,loc_{pickup})$$
+Our agent difference in cash is playing a part in our value function heuristic as it gives us some indication
+that our cash was increased (in case we drop a passenger in its destination) at this turn relative to
+other operations we may take. We denote it by:
+$$cash\_value = taxi.cash - other\_taxi.cash$$
 
-We also define the following:\\
-$MD_{0}(s,loc_{p1})$ as the MD from our agent to passenger 1.\\
-$MD_{0}(s,loc_{p2})$ as the MD from our agent to passenger 2.\\
-$MD_{1}(s,loc_{p1})$ as the MD from the other agent to passenger 1.\\
-$MD_{1}(s,loc_{p2})$ as the MD from the other agent to passenger 2.\\
-$V_{p1}(s,0)$ as the reward of our agent when taking passenger 1.\\
-$V_{p2}(s,0)$ as the reward of our agent when taking passenger 2.\\
-$V_{maxp}(s,0)$ as the reward of our agent when taking the most rewarding passenger.\\
-$V_{p1}(s,1)$ as the reward of the other agent when taking passenger 1.\\
-$V_{p2}(s,1)$ as the reward of the other agent when taking passenger 2.\\
-$V_{maxp}(s,1)$ as the reward of the other agent when taking the most rewarding passenger.\\
+Another important ingredient to our total value function is the fuel. Fuel worth money and the ability to get
+more cash by serving passengers. It also plays a major part in our survivable in the game. If we don't refill
+the fuel when it's close to empty, we may get stuck. We denote it by:
+$$fuel\_value = taxi.fuel - other\_taxi.fuel$$
 
-We follow the pseudo code below as our strategy:\\
-possible\_p1 = false\\
-if $MD_{0}(s,loc_{p1}) < MD_{1}(s,loc_{p1})$  possible\_p1 = true\\
-possible\_p2 = false\\
-if $MD_{0}(s,loc_{p2}) < MD_{1}(s,loc_{p2})$  possible\_p2 = true\\
+The Agents' locations and Passengers' locations play a major role in planning the agent's strategy and go towards almost assured cash gain vs the other agent's possibilities.
+We calculate for each the possibilities:\\
 
+if both passengers are waiting in the street we calculate the MD to the P0,P1 from each T0,T1. We also calculate the gain we can get after we drop the passenger. for example for T0->P0->D0:
+$$taxi\_to\_dest\_value = 2 * MD(P0,D0)- (MD(T0,P0) + MD(P0,D0)) =$$
+$$ MD(P0,D0)- MD(T0,P0)$$
+We then compare the values from each taxi to each destination.
+If we have both feasible before the other agent may reach the passenger, we select the one with the higher value. If only one of them is feasible before the other agent we go towards that passenger (we take that value).\\
+If both are not feasible to take before the other taxi, we still select the one with the bigger value.\\
+
+In case we already have a passenger in the taxi, the value is calculated as the cash at the end with the subtraction of the remaining cost:\\
+$$taxi\_to\_dest\_value = 2 * MD(P0,D0)- (MD(T0,P0) + MD(P0,D0)) =$$
+$$ 2 * MD(P0,D0)- (0 + MD(T0,D0)) = 2 * MD(P0,D0) - MD(T0,D0)$$
+
+In case, we don't have a passenger but the other taxi does have, we calculate the value of getting the other passenger:
+$$taxi\_to\_dest\_value = MD(P0,D0)- MD(T0,P0)$$
+
+When the fuel gets below 7 (as the max MD on the board is 6), we add another value function that favors the gas stations. We calculate the MD towards each of it and get the max between the two.\\
+We then calculate the value to survive and give it a weight of 10 as it's important not to get stuck w/o fuel:\\
+$$max\_cost\_taxi\_to\_gas = max(cost\_taxi\_to\_gas0, cost\_taxi\_to\_gas1)$$
+$$survival\_value = 10*(6 - max\_cost\_taxi\_to\_gas)$$
+
+The total value , for each state we get to, is an accumulation of the above:
+\rectres{$total\_value = survival\_value + taxi\_to\_dest\_value + cash\_value + fuel\_value$}
+
+
+Important note, if we discover we can win in certain conditions the other agent, for example, the other taxi has no fuel and we have cash, or the other agent cannot gain enough cash to win our taxi, we don't add the survival value (filling fuel) and just keep wasting fuel until the game is done.
+
+\subsection*{A.2}
+
+The existing heuristic of the greedy agent is not good, as it gives for each next state the same value w/o considering the ability to gain more cash due to serving passengers.\\
+We've explained in detail the formula and the motivation on the previous section.\\
+We think and can see from running some tests that our improved greedy agent wins the original one almost always unless we hit corner cases (such as the other agent gets stuck with one passenger on the other passenger location or destination, thus we cannot take the remaining passenger)\\
+
+\subsection*{A.3}
+See in code
+TODO: add results of testing many tests with different seeds for each case.
 
 \begin{comment}
-$V_{maxp}(s,0) = \max(V_{p1}(s,0),V_{p2}(s,0))$\\
-$V_{maxp}(s,1) = \max(V_{p1}(s,1),V_{p2}(s,1))$\\
-If $V_{maxp}(s,0) > V_{p2}(s,0)$ and 
-1. We can fulfill the drop with our gas and remaining turns - if the gas units we have is more than needed we pick 
-If both passengers are closer to our agent than to the other taxi agent, we will select the most rewarding drop:\\
-
-This is the cost of trip.\\
-If we manage to get the passenger to its destination (we assume we take him
-We calculate that for each passenger relative to each agent.\\
-As a greedy agent, we go to the passenger that will give us the best value (closest and thus no
-$MD(s,loc_{passenger})$gas wasting) w/o actually caring about the other agent actions (although we can consider his worst action, but it complicates the agent value estimation).\\
-We need to take into consideration some constraints. otherwise, we go to the gas station:\\
-1. The cash after the planned drop should be enough to go the closest gas station from the drop location. If not, we consider the other passenger.
-2. We check the same constraint as before on the new passenger's drop location vs the closest gas station location. If not, we ..
-
-If the other agent is closer, we will go on the second passenger.
-As the distance is smaller, the value of the state is higher. So we inverse the distance to get a value function for our state by $\frac{1}{d}$
-We may have negative 
- to first passenger and then to its destination and the same to the second passenger . We calculate the same for the other agent (to consider who will win).
-2. 
+ 
 \end{comment}
 \end{document}
 

@@ -46,7 +46,7 @@ def run_games(agents_names):
     agents_wins = [0,0]
     num_of_games = 100
     for seed in range(0,num_of_games):
-        result = run_game(agent_names=agents_names, seed=seed, count_steps=100)
+        result = run_game(agent_names=agents_names, seed=seed, count_steps=50)
         if result != 2:
             agents_wins[result] += 1
 

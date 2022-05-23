@@ -81,13 +81,28 @@ Important note, if we discover we can win in certain conditions the other agent,
 
 \subsection*{A.2}
 
-The existing heuristic of the greedy agent is not good, as it gives for each next state the same value w/o considering the ability to gain more cash due to serving passengers.\\
+The existing heuristic of the greedy agent is not performing well, as it gives for each next state the same value w/o considering the ability to gain more cash due to serving passengers.\\
+The only state in which it directs us to the correct direction to gain cash is when it got a passenger and it arrives to its destination. In such case, it will drop it correctly and gain cash as the value increases compared to other next state values which have less cash gain.\\
 We've explained in detail the formula and the motivation on the previous section.\\
 We think and can see from running some tests that our improved greedy agent wins the original one almost always unless we hit corner cases (such as the other agent gets stuck with one passenger on the other passenger location or destination, thus we cannot take the remaining passenger)\\
 
 \subsection*{A.3}
-See in code
-TODO: add results of testing many tests with different seeds for each case.
+We've run games with max of 50 steps each.\\
+We've run the following with random seeds increment between 0 to 50:\\
+greedy vs greedy\_improved:\\
+taxi greedy won 0/100 games!\\
+taxi greedy\_improved won 58/100 games!\\
+\\
+greedy vs random:\\
+taxi greedy won 0/100 games!\\
+taxi random won 4/100 games!\\
+\\
+greedy\_improved vs random:\\
+taxi greedy\_improved won 68/100 games!\\
+taxi random won 1/100 games!\\
+\\
+We clearly see that the improved greedy wins much more.\\
+There are corner cases in which it gets a draw such as when the other taxi agent gets one passenger and gets stuck w/o fuel on the other passenger destination.
 
 \begin{comment}
  

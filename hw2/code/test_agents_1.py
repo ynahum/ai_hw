@@ -16,7 +16,7 @@ agents = {
 }
 
 
-def run_agents(agent_names, seed, count_steps, time_limit= 0.5):
+def run_game(agent_names, seed, count_steps, time_limit= 0.5):
 
     # agent_names = sys.argv
     env = TaxiEnv()
@@ -35,14 +35,36 @@ def run_agents(agent_names, seed, count_steps, time_limit= 0.5):
         if env.done():
             break
     balances = env.get_balances()
-    print(balances)
+    #print(balances)
     if balances[0] == balances[1]:
-        print('draw')
+        return 2
     else:
-        print(f"taxi {agent_names[balances.index(max(balances))]} wins!")
+        return balances.index(max(balances))
+
+
+def run_games(agents_names):
+    agents_wins = [0,0]
+    num_of_games = 100
+    for seed in range(0,num_of_games):
+        result = run_game(agent_names=agents_names, seed=seed, count_steps=100)
+        if result != 2:
+            agents_wins[result] += 1
+
+    print("----------------------------------------------------------")
+    print(f"taxi {agents_names[0]} won {agents_wins[0]}/{num_of_games} games!")
+    print(f"taxi {agents_names[1]} won {agents_wins[1]}/{num_of_games} games!")
+    print("----------------------------------------------------------")
 
 
 if __name__ == "__main__":
-    run_agents(agent_names=["greedy_improved", "greedy"], seed=1, count_steps=100)
-    run_agents(agent_names=["greedy_improved", "greedy"], seed=2, count_steps=100)
-    run_agents(agent_names=["greedy_improved", "greedy"], seed=3, count_steps=100)
+
+    run_games(["greedy", "greedy_improved"])
+    run_games(["greedy", "random"])
+    run_games(["greedy_improved", "random"])
+
+    '''
+    if result == 2:
+        print('draw')
+    else:
+        print(f"taxi {agent_names[result]} wins!")
+    '''

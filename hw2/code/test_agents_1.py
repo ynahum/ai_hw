@@ -21,7 +21,7 @@ def run_game(agent_names, seed, count_steps, time_limit= 0.5):
     # agent_names = sys.argv
     env = TaxiEnv()
 
-    env.generate(seed)
+    env.generate(seed, 2*count_steps)
 
     for _ in range(count_steps):
         for i, agent_name in enumerate(agent_names):

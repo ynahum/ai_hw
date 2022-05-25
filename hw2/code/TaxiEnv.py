@@ -41,8 +41,10 @@ class TaxiEnv(object):
         self.passengers = None
         self.taxis = None
         self.seed = None
+        self.num_steps = None
 
-    def generate(self, seed):
+    def generate(self, seed, num_steps):
+        self.num_steps = num_steps
         self.seed = seed
         self.taxis = [Taxi(p, 16, 0) for p in self.random_cells(2)]
         self.passengers = [Passenger(p, d) for _ in range(2) for p in self.random_cells(1) for d in
@@ -51,6 +53,7 @@ class TaxiEnv(object):
 
     def clone(self):
         cloned = TaxiEnv()
+        cloned.num_steps = self.num_steps
         cloned.seed = self.seed
         cloned.taxis = [copy(t) for t in self.taxis]
         cloned.passengers = [copy(p) for p in self.passengers]
@@ -59,7 +62,7 @@ class TaxiEnv(object):
 
     def random_cells(self, count: int):
         random.seed(self.seed)
-        self.seed = random.random()
+        self.seed = random.randint(0, 255)
         return random.sample([(x, y) for x in range(4) for y in range(4)], count)
 
     def get_taxi(self, taxi_id):
@@ -89,7 +92,7 @@ class TaxiEnv(object):
         taxi = self.taxis[taxi_index]
         taxi_pos = taxi.position
         if taxi.fuel > 0:
-            for op_move, op_disp in [('move north', (0, 1)), ('move south', (0, -1)),
+            for op_move, op_disp in [('move north', (0, -1)), ('move south', (0, 1)),
                                      ('move west', (-1, 0)), ('move east', (1, 0))]:
                 new_pos = (taxi_pos[0] + op_disp[0], taxi_pos[1] + op_disp[1])
                 if 4 > new_pos[0] >= 0 and 4 > new_pos[1] >= 0 \
@@ -115,14 +118,16 @@ class TaxiEnv(object):
         self.passengers.append(Passenger(ps[0], ps[1]))
 
     def apply_operator(self, taxi_index: int, operator: str):
+        self.num_steps -= 1
         taxi = self.taxis[taxi_index]
         assert operator in self.get_legal_operators(taxi_index)
+        assert not self.num_steps < 0
         if operator == 'park':
             pass
         elif operator == 'move north':
-            self.move_taxi(taxi_index, (0, 1))
-        elif operator == 'move south':
             self.move_taxi(taxi_index, (0, -1))
+        elif operator == 'move south':
+            self.move_taxi(taxi_index, (0, 1))
         elif operator == 'move east':
             self.move_taxi(taxi_index, (1, 0))
         elif operator == 'move west':
@@ -142,7 +147,7 @@ class TaxiEnv(object):
             assert False
 
     def done(self):
-        return len([taxi for taxi in self.taxis if taxi.fuel > 0]) == 0
+        return len([taxi for taxi in self.taxis if taxi.fuel > 0]) == 0 or self.num_steps <= 0
 
     def get_balances(self):
         return [t.cash for t in self.taxis]

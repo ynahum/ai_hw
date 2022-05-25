@@ -15,7 +15,7 @@ def run_agents():
                         help='Second agent')
     parser.add_argument('-t', '--time_limit', type=float, nargs='?', help='Time limit for each turn in seconds', default=1)
     parser.add_argument('-s', '--seed', nargs='?', type=int, help='Seed to be used for generating the game',
-                        default=random.randint(0, 176400))
+                        default=random.randint(0, 255))
     parser.add_argument('-c', '--count_steps', nargs='?', type=int, help='Number of steps each taxi gets before game is over',
                         default=4761)
     parser.add_argument('--print_game', action='store_true')
@@ -35,7 +35,7 @@ def run_agents():
     agent_names = [args.agent0, args.agent1]
     env = TaxiEnv()
 
-    env.generate(args.seed)
+    env.generate(args.seed, 2*args.count_steps)
 
     if args.print_game:
         print('initial board:')

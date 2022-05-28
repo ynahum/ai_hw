@@ -1,6 +1,7 @@
 from Agent import Agent, AgentGreedy
 from TaxiEnv import TaxiEnv, manhattan_distance
 import random
+import time
 
 
 def my_greedy_improved_h(env: TaxiEnv, taxi_id: int):
@@ -142,11 +143,6 @@ def my_greedy_improved_h(env: TaxiEnv, taxi_id: int):
     return total_value
 
 
-class GameSearch:
-    def __init__(self):
-        pass
-
-
 class AgentGreedyImproved(AgentGreedy):
     # section a : 3
 
@@ -156,8 +152,42 @@ class AgentGreedyImproved(AgentGreedy):
 
 class AgentMinimax(Agent):
     # TODO: section b : 1
-    def run_step(self, env: TaxiEnv, agent_id, time_limit):
-        raise NotImplementedError()
+    def run_step(self, env: TaxiEnv, taxi_id, time_limit):
+        start = time.time()
+        other_taxi_id = (taxi_id + 1) % 2
+
+        operators = env.get_legal_operators(taxi_id)
+        children = [env.clone() for _ in operators]
+        for child, op in zip(children, operators):
+            child.apply_operator(taxi_id, op)
+
+        depth = 1
+        while True:
+            children_minimax = [self.rb_minimax(child, other_taxi_id, depth-1) for child in children]
+            max_minimax = max(children_minimax)
+            index_selected = children_minimax.index(max_minimax)
+
+            end = time.time()
+            if end - start > (time_limit/2):
+                break
+            depth += 1
+
+        return operators[index_selected]
+
+    def rb_minimax(self,env: TaxiEnv, taxi_id, depth):
+        if env.done():
+            taxi = env.get_taxi(taxi_id)
+            other_taxi_id = (taxi_id + 1) % 2
+            other_taxi = env.get_taxi(other_taxi_id)
+            return 1000 * (taxi.cash - other_taxi.cash)
+        if depth == 0:
+            return self.heuristic(env, taxi_id)
+        # TODO:
+        return 0
+
+    def heuristic(self, env: TaxiEnv, taxi_id: int):
+        return my_greedy_improved_h(env, taxi_id)
+
 
 
 class AgentAlphaBeta(Agent):

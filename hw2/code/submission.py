@@ -4,12 +4,15 @@ import random
 import time
 import math
 
+greedy_improved_debug_prints = False
+minimax_debug_prints = False
+ignore_time_limit = False
+max_depth = 20
 
 def my_greedy_improved_h(env: TaxiEnv, taxi_id: int):
-    debug_prints = False
 
     taxi = env.get_taxi(taxi_id)
-    if debug_prints:
+    if greedy_improved_debug_prints:
         print(f"taxi.position: {taxi.position}")
         print(f"taxi is occupied: {env.taxi_is_occupied(taxi_id)}")
         print(f"taxi.fuel: {taxi.fuel}")
@@ -42,7 +45,7 @@ def my_greedy_improved_h(env: TaxiEnv, taxi_id: int):
             max_cost_taxi_to_gas = max(cost_taxi_to_gas0, cost_taxi_to_gas1)
             if max_cost_taxi_to_gas <= (taxi.fuel - 3):
                 survival_value = 10 * (6 - max_cost_taxi_to_gas)
-                if debug_prints:
+                if greedy_improved_debug_prints:
                     print(f"cost_taxi_to_gas0: {cost_taxi_to_gas0}")
                     print(f"cost_taxi_to_gas1: {cost_taxi_to_gas1}")
 
@@ -100,7 +103,7 @@ def my_greedy_improved_h(env: TaxiEnv, taxi_id: int):
             elif opt_p2_closer_to_taxi_than_other_taxi:
                 select_dest = 2
             else:
-                if debug_prints:
+                if greedy_improved_debug_prints:
                     print("no winning path over other taxi")
                 if taxi_to_dest_1_value_is_greater:
                     select_dest = 1
@@ -126,7 +129,7 @@ def my_greedy_improved_h(env: TaxiEnv, taxi_id: int):
 
     total_value = cash_value + fuel_value + survival_value + value_taxi_to_dest_selected
 
-    if debug_prints:
+    if greedy_improved_debug_prints:
         print(f"win_condition: {win_condition}")
         print(f"taxi_pas_selected.position: {taxi_pas_selected.position}")
 
@@ -152,7 +155,7 @@ class AgentGreedyImproved(AgentGreedy):
 
 
 class AgentMinimax(Agent):
-    # TODO: section b : 1
+    # section b : 1
     def run_step(self, env: TaxiEnv, taxi_id, time_limit):
         start = time.time()
 
@@ -163,37 +166,63 @@ class AgentMinimax(Agent):
 
         depth = 1
         while True:
+            if minimax_debug_prints:
+                print(f"operators={operators}")
+                print(f"depth={depth} call minimax from run_step")
             children_minimax = [self.rb_minimax(child, taxi_id, False, depth-1) for child in children]
             max_minimax = max(children_minimax)
             index_selected = children_minimax.index(max_minimax)
+            if minimax_debug_prints:
+                print(f"children_minimax={children_minimax}")
+                print(f"max_minimax={max_minimax} index_selected={index_selected}")
 
             end = time.time()
-            if end - start > (time_limit/3):
+            process_time = end - start
+            time_threshold = (time_limit/4)
+            if minimax_debug_prints:
+                print(f"process_time={process_time}, time_threshold={time_threshold}")
+            if not ignore_time_limit and process_time > time_threshold:
                 break
             depth += 1
+            if depth >= max_depth:
+                break
 
         return operators[index_selected]
 
     def rb_minimax(self,env: TaxiEnv, taxi_id, is_max_turn, depth):
+        other_taxi_id = (taxi_id + 1) % 2
         if env.done():
             taxi = env.get_taxi(taxi_id)
-            other_taxi_id = (taxi_id + 1) % 2
             other_taxi = env.get_taxi(other_taxi_id)
             # as infinite reward in case we win
             return math.inf * (taxi.cash - other_taxi.cash)
         if depth == 0:
             return self.heuristic(env, taxi_id)
 
-        operators = env.get_legal_operators(taxi_id)
+        playing_taxi_id = taxi_id
+        if not is_max_turn:
+            playing_taxi_id = other_taxi_id
+
+        operators = env.get_legal_operators(playing_taxi_id)
         children = [env.clone() for _ in operators]
         for child, op in zip(children, operators):
-            child.apply_operator(taxi_id, op)
-
+            child.apply_operator(playing_taxi_id, op)
+        if minimax_debug_prints:
+            print(f"")
+            print(f"depth={depth}")
+            print(f"playing_taxi_id={playing_taxi_id}")
+            print(f"player operators={operators}")
         children_minimax = [self.rb_minimax(child, taxi_id, not is_max_turn, depth - 1) for child in children]
+        if minimax_debug_prints:
+            print(f"children_minimax={children_minimax}")
+            print(f"playing_taxi_id={playing_taxi_id}")
+            print(f"depth={depth}")
+
         if is_max_turn:
             minimax_value = max(children_minimax)
         else:
             minimax_value = min(children_minimax)
+
         return minimax_value
 
     def heuristic(self, env: TaxiEnv, taxi_id: int):

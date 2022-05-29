@@ -23,6 +23,11 @@ def run_game(agent_names, seed, count_steps, time_limit= 0.5):
 
     env.generate(seed, 2*count_steps)
 
+    print_game = False
+    if print_game:
+        print('initial board:')
+        env.print()
+
     for _ in range(count_steps):
         for i, agent_name in enumerate(agent_names):
             agent = agents[agent_name]
@@ -32,6 +37,9 @@ def run_game(agent_names, seed, count_steps, time_limit= 0.5):
             if end - start > time_limit:
                 raise RuntimeError("Agent used too much time!")
             env.apply_operator(i, op)
+            if print_game:
+                print('taxi ' + str(i) + ' chose ' + op)
+                env.print()
         if env.done():
             break
     balances = env.get_balances()
@@ -44,9 +52,9 @@ def run_game(agent_names, seed, count_steps, time_limit= 0.5):
 
 def run_games(agents_names):
     agents_wins = [0,0]
-    num_of_games = 100
+    num_of_games = 10
     for seed in range(0,num_of_games):
-        result = run_game(agent_names=agents_names, seed=seed, count_steps=50)
+        result = run_game(agent_names=agents_names, seed=seed, count_steps=50, time_limit=0.5)
         if result != 2:
             agents_wins[result] += 1
 
@@ -58,7 +66,8 @@ def run_games(agents_names):
 
 if __name__ == "__main__":
 
-    run_games(["minimax", "greedy_improved"])
+    #run_games(["minimax", "greedy_improved"])
+    run_games(["minimax", "random"])
 
     '''
     if result == 2:

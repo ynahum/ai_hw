@@ -154,6 +154,45 @@ def my_greedy_improved_h(env: TaxiEnv, taxi_id: int):
     return total_value
 
 
+def rb_minimax(env: TaxiEnv, taxi_id, h, is_max_turn, depth):
+    other_taxi_id = (taxi_id + 1) % 2
+    if env.done():
+        taxi = env.get_taxi(taxi_id)
+        other_taxi = env.get_taxi(other_taxi_id)
+        # as infinite reward in case we win
+        return 100 * (taxi.cash - other_taxi.cash)
+    if depth == 0:
+        return h(env, taxi_id)
+
+    playing_taxi_id = taxi_id
+    if not is_max_turn:
+        playing_taxi_id = other_taxi_id
+
+    operators = env.get_legal_operators(playing_taxi_id)
+    children = [env.clone() for _ in operators]
+    children_minimax = []
+    for child, op in zip(children, operators):
+        child.apply_operator(playing_taxi_id, op)
+        if MyDebug.minimax_debug_prints:
+            print(f"call minimax test op={op} from operators={operators}"
+                  " depth={depth} playing_taxi_id={playing_taxi_id}")
+        child_minimax = rb_minimax(child, taxi_id, h, not is_max_turn, depth - 1)
+        children_minimax.append(child_minimax)
+
+    if is_max_turn:
+        minimax_value = max(children_minimax)
+        if MyDebug.minimax_debug_prints:
+            print(f"select maximized minimax_value={minimax_value} depth={depth} playing_taxi_id={playing_taxi_id}")
+    else:
+        minimax_value = min(children_minimax)
+        if MyDebug.minimax_debug_prints:
+            print(f"select minimized minimax_value={minimax_value} depth={depth} playing_taxi_id={playing_taxi_id}")
+
+    if MyDebug.minimax_debug_prints:
+        print(f"total children_minimax={children_minimax} depth={depth} playing_taxi_id={playing_taxi_id}")
+
+    return minimax_value
+
 class AgentGreedyImproved(AgentGreedy):
     # section a : 3
 
@@ -180,7 +219,7 @@ class AgentMinimax(Agent):
             for child, op in zip(children, operators):
                 if MyDebug.minimax_debug_prints:
                     print(f"call minimax test op={op} from operators={operators}")
-                child_minimax = self.rb_minimax(child, taxi_id, False, depth - 1)
+                child_minimax = rb_minimax(child, taxi_id, my_greedy_improved_h, False, depth - 1)
                 children_minimax.append(child_minimax)
             max_minimax = max(children_minimax)
             index_selected = children_minimax.index(max_minimax)
@@ -202,49 +241,6 @@ class AgentMinimax(Agent):
                 break
 
         return operators[index_selected]
-
-    def rb_minimax(self,env: TaxiEnv, taxi_id, is_max_turn, depth):
-        other_taxi_id = (taxi_id + 1) % 2
-        if env.done():
-            taxi = env.get_taxi(taxi_id)
-            other_taxi = env.get_taxi(other_taxi_id)
-            # as infinite reward in case we win
-            return 100 * (taxi.cash - other_taxi.cash)
-        if depth == 0:
-            return self.heuristic(env, taxi_id)
-
-        playing_taxi_id = taxi_id
-        if not is_max_turn:
-            playing_taxi_id = other_taxi_id
-
-        operators = env.get_legal_operators(playing_taxi_id)
-        children = [env.clone() for _ in operators]
-        children_minimax = []
-        for child, op in zip(children, operators):
-            child.apply_operator(playing_taxi_id, op)
-            if MyDebug.minimax_debug_prints:
-                print(f"call minimax test op={op} from operators={operators}"
-                      " depth={depth} playing_taxi_id={playing_taxi_id}")
-            child_minimax = self.rb_minimax(child, taxi_id, not is_max_turn, depth - 1)
-            children_minimax.append(child_minimax)
-
-        if is_max_turn:
-            minimax_value = max(children_minimax)
-            if MyDebug.minimax_debug_prints:
-                print(f"select maximized minimax_value={minimax_value} depth={depth} playing_taxi_id={playing_taxi_id}")
-        else:
-            minimax_value = min(children_minimax)
-            if MyDebug.minimax_debug_prints:
-                print(f"select minimized minimax_value={minimax_value} depth={depth} playing_taxi_id={playing_taxi_id}")
-
-        if MyDebug.minimax_debug_prints:
-            print(f"total children_minimax={children_minimax} depth={depth} playing_taxi_id={playing_taxi_id}")
-
-        return minimax_value
-
-    def heuristic(self, env: TaxiEnv, taxi_id: int):
-        return my_greedy_improved_h(env, taxi_id)
-
 
 
 class AgentAlphaBeta(Agent):

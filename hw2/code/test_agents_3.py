@@ -67,7 +67,8 @@ def run_games(agents_names, num_of_games=10, seed_offset=0):
 
 if __name__ == "__main__":
 
-    run_games(["alphabeta", "greedy_improved"])
+    #run_games(["alphabeta", "greedy_improved"])
+    run_games(["expectimax", "greedy_improved"])
     #run_games(["minimax", "random"])
     #run_games(["greedy_improved", "random"])
 

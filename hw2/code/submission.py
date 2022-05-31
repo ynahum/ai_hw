@@ -154,7 +154,15 @@ def greedy_improved_h(env: TaxiEnv, taxi_id: int):
     return total_value
 
 
-def rb_alpha_beta(env: TaxiEnv, taxi_id, h, is_max_turn, depth, alpha=None, beta=None):
+probabilities_weights = {'park':1, 'move north':1, 'move south':1, 'move east':1, 'move west':1,\
+                 'pick up passenger':2, 'refuel':2, 'drop off passenger':2}
+
+
+def get_op_probability_weight(op):
+    return probabilities_weights[op]
+
+
+def rb_alpha_beta(env: TaxiEnv, taxi_id, h, is_max_turn, depth, alpha=None, beta=None, expectimax=False):
     other_taxi_id = (taxi_id + 1) % 2
     if env.done():
         taxi = env.get_taxi(taxi_id)
@@ -178,7 +186,7 @@ def rb_alpha_beta(env: TaxiEnv, taxi_id, h, is_max_turn, depth, alpha=None, beta
             if MyDebug.minimax_debug_prints:
                 print(f"call minimax test op={op} from operators={operators}"
                       f" depth={depth} playing_taxi_id={playing_taxi_id}")
-            child_minimax = rb_alpha_beta(child, taxi_id, h, not is_max_turn, depth - 1, alpha, beta)
+            child_minimax = rb_alpha_beta(child, taxi_id, h, not is_max_turn, depth - 1, alpha, beta, expectimax)
             max_value = max([max_value, child_minimax])
             if alpha is not None:
                 alpha = max([max_value, alpha])
@@ -189,25 +197,38 @@ def rb_alpha_beta(env: TaxiEnv, taxi_id, h, is_max_turn, depth, alpha=None, beta
             print(f"select maximized max_value={max_value} depth={depth} playing_taxi_id={playing_taxi_id}")
         return max_value
     else:
-        min_value = math.inf
-        for child, op in zip(children, operators):
-            child.apply_operator(playing_taxi_id, op)
-            if MyDebug.minimax_debug_prints:
-                print(f"call minimax test op={op} from operators={operators}"
-                      f" depth={depth} playing_taxi_id={playing_taxi_id}")
-            child_minimax = rb_alpha_beta(child, taxi_id, h, not is_max_turn, depth - 1, alpha, beta)
-            min_value = min([min_value, child_minimax])
-            if beta is not None:
-                beta = min([min_value, beta])
-            if alpha is not None:
-                if min_value <= alpha:
-                    min_value = -math.inf
+        if expectimax:
+            ops_weights = []
+            ops_values = []
+            for child, op in zip(children, operators):
+                child.apply_operator(playing_taxi_id, op)
+                prob_weight = get_op_probability_weight(op)
+                ops_weights.append(prob_weight)
+                child_value = rb_alpha_beta(child, taxi_id, h, not is_max_turn, depth - 1, alpha, beta)
+                ops_values.append(child_value)
+            weights_sum = sum(ops_weights)
+            expected_value = 0
+            for weight, value in zip(ops_weights, ops_values):
+                expected_value += (weight * value / weights_sum)
+            compete_agent_value = expected_value
+        else:
+            min_value = math.inf
+            for child, op in zip(children, operators):
+                child.apply_operator(playing_taxi_id, op)
+                child_minimax = rb_alpha_beta(child, taxi_id, h, not is_max_turn, depth - 1, alpha, beta)
+                min_value = min([min_value, child_minimax])
+                if beta is not None:
+                    beta = min([min_value, beta])
+                if alpha is not None:
+                    if min_value <= alpha:
+                        min_value = -math.inf
+            compete_agent_value = min_value
         if MyDebug.minimax_debug_prints:
-            print(f"select minimized min_value={min_value} depth={depth} playing_taxi_id={playing_taxi_id}")
-        return min_value
+            print(f"select minimized compete_agent_value={compete_agent_value} depth={depth} playing_taxi_id={playing_taxi_id}")
+        return compete_agent_value
 
 
-def taxi_run_step(env: TaxiEnv, taxi_id, time_limit, alpha_beta_pruning=False):
+def taxi_run_step(env: TaxiEnv, taxi_id, time_limit, alpha_beta_pruning=False, expectimax=False):
     start = time.time()
 
     operators = env.get_legal_operators(taxi_id)
@@ -225,7 +246,8 @@ def taxi_run_step(env: TaxiEnv, taxi_id, time_limit, alpha_beta_pruning=False):
             if MyDebug.minimax_debug_prints:
                 print(f"call minimax test op={op} from operators={operators}")
             if alpha_beta_pruning:
-                child_minimax = rb_alpha_beta(child, taxi_id, greedy_improved_h, False, depth - 1,alpha=-math.inf, beta=math.inf)
+                child_minimax = rb_alpha_beta(child, taxi_id, greedy_improved_h, False,\
+                                              depth - 1,alpha=-math.inf, beta=math.inf, expectimax=expectimax)
             else:
                 child_minimax = rb_alpha_beta(child, taxi_id, greedy_improved_h, False, depth - 1)
             children_minimax.append(child_minimax)
@@ -237,9 +259,8 @@ def taxi_run_step(env: TaxiEnv, taxi_id, time_limit, alpha_beta_pruning=False):
 
         end = time.time()
         process_time = end - start
-        time_threshold = (time_limit/4)
+        time_threshold = (time_limit/5)
         if MyDebug.minimax_debug_prints:
-            time_threshold = (time_limit / 5)
             print(f"process_time={process_time}, time_threshold={time_threshold}")
             print("------------------------------")
         if not MyDebug.ignore_time_limit and process_time > time_threshold:
@@ -270,6 +291,6 @@ class AgentAlphaBeta(Agent):
 
 
 class AgentExpectimax(Agent):
-    # TODO: section d : 1
+    # section d : 1
     def run_step(self, env: TaxiEnv, agent_id, time_limit):
-        raise NotImplementedError()
+        return taxi_run_step(env, agent_id, time_limit, alpha_beta_pruning=True, expectimax=True)

@@ -16,7 +16,7 @@ class DebugGlobals:
 MyDebug = DebugGlobals()
 
 
-def my_greedy_improved_h(env: TaxiEnv, taxi_id: int):
+def greedy_improved_h(env: TaxiEnv, taxi_id: int):
 
     taxi = env.get_taxi(taxi_id)
     if MyDebug.greedy_improved_debug_prints:
@@ -154,7 +154,7 @@ def my_greedy_improved_h(env: TaxiEnv, taxi_id: int):
     return total_value
 
 
-def rb_minimax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, alpha=None, beta=None):
+def rb_alpha_beta(env: TaxiEnv, taxi_id, h, is_max_turn, depth, alpha=None, beta=None):
     other_taxi_id = (taxi_id + 1) % 2
     if env.done():
         taxi = env.get_taxi(taxi_id)
@@ -178,7 +178,7 @@ def rb_minimax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, alpha=None, beta=No
             if MyDebug.minimax_debug_prints:
                 print(f"call minimax test op={op} from operators={operators}"
                       f" depth={depth} playing_taxi_id={playing_taxi_id}")
-            child_minimax = rb_minimax(child, taxi_id, h, not is_max_turn, depth - 1, alpha, beta)
+            child_minimax = rb_alpha_beta(child, taxi_id, h, not is_max_turn, depth - 1, alpha, beta)
             max_value = max([max_value, child_minimax])
             if alpha is not None:
                 alpha = max([max_value, alpha])
@@ -195,7 +195,7 @@ def rb_minimax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, alpha=None, beta=No
             if MyDebug.minimax_debug_prints:
                 print(f"call minimax test op={op} from operators={operators}"
                       f" depth={depth} playing_taxi_id={playing_taxi_id}")
-            child_minimax = rb_minimax(child, taxi_id, h, not is_max_turn, depth - 1, alpha, beta)
+            child_minimax = rb_alpha_beta(child, taxi_id, h, not is_max_turn, depth - 1, alpha, beta)
             min_value = min([min_value, child_minimax])
             if beta is not None:
                 beta = min([min_value, beta])
@@ -206,60 +206,67 @@ def rb_minimax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, alpha=None, beta=No
             print(f"select minimized min_value={min_value} depth={depth} playing_taxi_id={playing_taxi_id}")
         return min_value
 
+
+def taxi_run_step(env: TaxiEnv, taxi_id, time_limit, alpha_beta_pruning=False):
+    start = time.time()
+
+    operators = env.get_legal_operators(taxi_id)
+    children = [env.clone() for _ in operators]
+    for child, op in zip(children, operators):
+        child.apply_operator(taxi_id, op)
+
+    depth = 1
+    while True:
+        if MyDebug.minimax_debug_prints:
+            print(f"depth={depth} call minimax from run_step")
+            print("------------------------------")
+        children_minimax = []
+        for child, op in zip(children, operators):
+            if MyDebug.minimax_debug_prints:
+                print(f"call minimax test op={op} from operators={operators}")
+            if alpha_beta_pruning:
+                child_minimax = rb_alpha_beta(child, taxi_id, greedy_improved_h, False, depth - 1,alpha=-math.inf, beta=math.inf)
+            else:
+                child_minimax = rb_alpha_beta(child, taxi_id, greedy_improved_h, False, depth - 1)
+            children_minimax.append(child_minimax)
+        max_minimax = max(children_minimax)
+        index_selected = children_minimax.index(max_minimax)
+        if MyDebug.minimax_debug_prints:
+            print(f"final maximize max_minimax={max_minimax} children_minimax={children_minimax}"
+                  " index_selected={index_selected} op selected={operators[index_selected]}")
+
+        end = time.time()
+        process_time = end - start
+        time_threshold = (time_limit/4)
+        if MyDebug.minimax_debug_prints:
+            time_threshold = (time_limit / 5)
+            print(f"process_time={process_time}, time_threshold={time_threshold}")
+            print("------------------------------")
+        if not MyDebug.ignore_time_limit and process_time > time_threshold:
+            break
+        depth += 1
+        if depth >= MyDebug.max_depth or depth > env.num_steps:
+            break
+
+    return operators[index_selected]
+
+
 class AgentGreedyImproved(AgentGreedy):
     # section a : 3
-
     def heuristic(self, env: TaxiEnv, taxi_id: int):
-        return my_greedy_improved_h(env, taxi_id)
+        return greedy_improved_h(env, taxi_id)
 
 
 class AgentMinimax(Agent):
     # section b : 1
     def run_step(self, env: TaxiEnv, taxi_id, time_limit):
-        start = time.time()
-
-        operators = env.get_legal_operators(taxi_id)
-        children = [env.clone() for _ in operators]
-        for child, op in zip(children, operators):
-            child.apply_operator(taxi_id, op)
-
-        depth = 1
-        while True:
-            if MyDebug.minimax_debug_prints:
-                print(f"depth={depth} call minimax from run_step")
-                print("------------------------------")
-            children_minimax = []
-            for child, op in zip(children, operators):
-                if MyDebug.minimax_debug_prints:
-                    print(f"call minimax test op={op} from operators={operators}")
-                child_minimax = rb_minimax(child, taxi_id, my_greedy_improved_h, False, depth - 1)
-                children_minimax.append(child_minimax)
-            max_minimax = max(children_minimax)
-            index_selected = children_minimax.index(max_minimax)
-            if MyDebug.minimax_debug_prints:
-                print(f"final maximize max_minimax={max_minimax} children_minimax={children_minimax}"
-                      " index_selected={index_selected} op selected={operators[index_selected]}")
-
-            end = time.time()
-            process_time = end - start
-            time_threshold = (time_limit/4)
-            if MyDebug.minimax_debug_prints:
-                time_threshold = (time_limit / 5)
-                print(f"process_time={process_time}, time_threshold={time_threshold}")
-                print("------------------------------")
-            if not MyDebug.ignore_time_limit and process_time > time_threshold:
-                break
-            depth += 1
-            if depth >= MyDebug.max_depth or depth > env.num_steps:
-                break
-
-        return operators[index_selected]
+        return taxi_run_step(env, taxi_id, time_limit)
 
 
 class AgentAlphaBeta(Agent):
-    # TODO: section c : 1
+    # section c : 1
     def run_step(self, env: TaxiEnv, agent_id, time_limit):
-        raise NotImplementedError()
+        return taxi_run_step(env, agent_id, time_limit, alpha_beta_pruning=True)
 
 
 class AgentExpectimax(Agent):

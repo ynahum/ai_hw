@@ -114,15 +114,45 @@ We can deepen until the difference is small (calm).
 
 \subsection*{B.2}
 In iterative deepening we have 2 advantages:\\
-1. When we need to stand in a specific time limit, we always return a valid minimax value under the time constraint (admissible to the optimum under the time constraint).\\
+1. When we need to stand in a specific time limit, we always return a valid MM (MiniMax) value under the time constraint (admissible to the optimum under the time constraint).\\
+2. We finish a certain level of deepening and have a definite horizon compared to deepening over certain action and not on searching over other possible operations due to time limit. 
 
 In $\alpha\beta$ pruning we have other advantages:\\
+1. We save time by not searching unneeded branches. If we have a time limit and in a RB MM, we will utilize time better and may go deeper in our game search.
+2. The average time complexity is much better compared to regular MM.
 
+BTW, 
 
-If we apply both iterative deepening and $\alpha\beta$ pruning, we can reorder the children based on previous iteration of iterative deepening and thus make the the $\alpha\beta$ pruning more effective (most likely that we will prune much more).
+Other changes that can be useful are:\\
+1. If we apply both iterative deepening and $\alpha\beta$ pruning, we can reorder the children based on previous iteration of iterative deepening and thus make the the $\alpha\beta$ pruning more effective (most likely that we will prune much more).
+2. States table - we can save a hash table with states as keys and check if we were in a specific state before in order to save the MM search from that state. However, in our taxi env, the probability for a repetition of a specific state is close to 0. We can however, use part of the state features to estimate the MM value.
+3. Selective deepening (As we explained at section B.1).
+
+\subsection*{B.3}
+In code 
+
+\section*{C - $\alpha\beta$ Agent}
+
+\subsection*{C.1}
+In code 
+
+\subsection*{C.2}
+In k multiagent game, the MM would have a vector of values at each tree node and each agent will try to maximize its value based on its children values (based on the agent specific corresponding value in the vector).\\
+When we had only 2 agent, minimizing the other agent value is like maximizing ours as it is a zero sum game, But, in k agents we don't have this degree of freedom, so we use maximization over each agent value.\\
+At the leaf states we check who won for our playing agent and return a low utility function in case we lose compared to other agents values.\\
+As we increase K the running time will increase as the strategy game tree  will be deeper. We can use $\beta$ pruning to save paths of maximization (k $\beta$ values)\\
 
 \begin{comment}
- 
+The average branching factor (in the ideal case in which we prune all with ideal children ordering) $b'$ will be $\sqrt[k]{b}$ as the recursion formula (as seen on lecture) for the K case is:
+$$T(d)= T(d-1) + (b-1)T(d-(k+1))$$
 \end{comment}
+\subsection*{C.3}
+Yes, since we optimize and search less paths in the game tree, we have more time to increase our deepening and thus select more accurate worst case compared to w/o pruning.\\
+Thus, our decision should be better (doesn't rely on the heuristic at a shallow level as regular MM)\\
+
+\section*{D - ExpectiMax Agent}
+
+\subsection*{D.1}
+
 \end{document}
 

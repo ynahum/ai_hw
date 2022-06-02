@@ -107,10 +107,9 @@ There are corner cases in which it gets a draw such as when the other taxi agent
 \section*{B - Minimax Agent}
 
 \subsection*{B.1}
-There is no actual bug. There might be situations in which the agent reaches its maximum depth and doesn't discover that it wins, even though if it goes one level deeper, it will find that it would have won.\\
-To solve this, one can use selective deepening. Meaning, in certain cases we will go deeper in minimax search.\\
-Such case can be when we're at a "noisy" state, or when the last move was revolutionary. An idea for measuring it might be by a big differences between heuristic values between consecutive states.\\
-We can deepen until the difference is small (calm).
+As in DFS, we can get to a winning situation in a very deep and far from our current state as we go deep first and not as in BFS (to the breadth).\\
+Thus, the agent can find a winning state (infinite value returned) but if we  continued to search in the next children of the current parent state, it would have found a faster (less deep) way to win the game.\\
+There is no actual bug. However, to solve this issues, we can use iterative deepening as we did to DFS to make it admissible (finding the optimal path). This way, the agent will select the closest path to win the game.\\
 
 \subsection*{B.2}
 In iterative deepening we have 2 advantages:\\
@@ -121,12 +120,12 @@ In $\alpha\beta$ pruning we have other advantages:\\
 1. We save time by not searching unneeded branches. If we have a time limit and in a RB MM, we will utilize time better and may go deeper in our game search.
 2. The average time complexity is much better compared to regular MM.
 
-BTW, 
-
 Other changes that can be useful are:\\
 1. If we apply both iterative deepening and $\alpha\beta$ pruning, we can reorder the children based on previous iteration of iterative deepening and thus make the the $\alpha\beta$ pruning more effective (most likely that we will prune much more).
 2. States table - we can save a hash table with states as keys and check if we were in a specific state before in order to save the MM search from that state. However, in our taxi env, the probability for a repetition of a specific state is close to 0. We can however, use part of the state features to estimate the MM value.
-3. Selective deepening (As we explained at section B.1).
+3. Selective deepening - one can use selective deepening. Meaning, in certain cases we will go deeper in minimax search.\\
+Such cases can be when we're at a "noisy" state, or when the last move was revolutionary. An idea for measuring it might be by a big differences between heuristic values between consecutive states.\\
+We can deepen until the difference is small (calm).
 
 \subsection*{B.3}
 In code 

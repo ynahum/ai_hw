@@ -145,6 +145,7 @@ As we increase K the running time will increase as the strategy game tree  will 
 The average branching factor (in the ideal case in which we prune all with ideal children ordering) $b'$ will be $\sqrt[k]{b}$ as the recursion formula (as seen on lecture) for the K case is:
 $$T(d)= T(d-1) + (b-1)T(d-(k+1))$$
 \end{comment}
+
 \subsection*{C.3}
 Yes, since we optimize and search less paths in the game tree, we have more time to increase our deepening and thus select more accurate worst case compared to w/o pruning.\\
 Thus, our decision should be better (doesn't rely on the heuristic at a shallow level as regular MM)\\
@@ -152,6 +153,53 @@ Thus, our decision should be better (doesn't rely on the heuristic at a shallow 
 \section*{D - ExpectiMax Agent}
 
 \subsection*{D.1}
+
+The problem is that we cannot compute expectancy with partial info from the children minimax (if they were $\alpha\beta$ pruned). We need to know the actual minimax values of all possible operations in order to calculate the expectancy over them.\\
+For example, in our expectimax implementation, if we allow pruning and all the siblings of our current checked operation ("move north" for example with $x=\frac{1}{6}$ as in the explanation at question section D.2) are pruned ("move east", "pickup passenger", "refuel"), the expectancy will not be defined as we don't have values to the other operations and we don't actually compute expectancy.\\
+
+\subsection*{D.2}
+In code.\\
+We calculate weight per operation as defined, and then normalize by the sum of weights to get the probabilities.\\
+From it we calculate the expectation for the minimum competing agent.
+
+\section*{E - Open Question}
+
+\subsection*{E.1}
+
+As in our implementation, we've defined the utility function to be $$\infty *(DecidingAgent.cash - OtherAgent.cash)$$
+Thus, it is symetric and $U(S_G,k)\in \{-\infty,0,\infty\}$ and we get $U(S_G,0) + U(S_G,1) = 0$ as should in a zero sum game. 
+
+\subsection*{E.2}
+
+It would be undefined as for losing goal state in zero sum game we get $U(S_G,k)<0$ and thus log over it is not defined.
+
+\subsection*{E.3}
+
+It wouldn't break the zero sum game as $(-\infty)^7 = -\infty$ and we get the same values as before.
+
+\subsection*{E.4}
+
+The expectancy over the utility function stays the same (one needs to make sure that the program prefers $\infty$ over $-\infty$ in case the probabilities of the operations $p_1,p_2$ , for example, have $p_1<p_2$ and thus $p_1*(-\infty) + p_2*\infty = \infty$ and vice versa)\\
+In case we use the log function over the utility, we again may have undefined behavior as the $U(S_G,k)$ may be $U(S_G,k)<0$ for some operations and the expectancy in total can be less than zero.
+
+\subsection*{E.5}
+
+1. For no resource limitation $\alpha\beta$:\\
+For the $MM(s)$ value we have $f(s)-2 \leq MM(s) \leq f(s)+2$\\
+We can optimize by adding following lines of code at the beginning of $\alpha\beta$ function (after the the check over goal state for utility function):\\
+$\alpha = max(f(s)-2,\alpha)$\\
+$if (\alpha >= f(s)+2) return f(s)+2$\\
+$\beta = min(f(s)+2,\beta)$\\
+$if (\beta <= f(s)-2) return f(s)-2$\\
+
+The first line in which we update the $\alpha$ value is due to the fact that we have another lower bound $f(s)-2$ over the $MM(s)$ value besides the $\alpha$ value.\\
+Thus we add it to our $\alpha$ calculation as we can use it a possible higher value (a tighter lower bound for it) of $\alpha$ (usage in case we are in a minimizing agent).\\
+
+The second line is to already prune based on our previous (given as parameter) $\alpha$ knowledge. we can skip the processing if we know our current $\alpha$ is already higher than the $f(S)+2$ as $MM(S) \leq f(S) + 2 \leq \alpha$  and thus we have a parent maximizer with better maximum from its previous children and we can prune the current.\\
+The same reasoning stands symterically for the $\beta$ related lines.\\
+
+2. For the resource limited $\alpha\beta$:\\
+We cannot use the information from $f(s)$ as we don't have a connection between its value and the heuristic value on which the theorem about the assurance of RL MM value is based.
 
 \end{document}
 

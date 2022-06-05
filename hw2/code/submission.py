@@ -59,8 +59,6 @@ def greedy_improved_h(env: TaxiEnv, taxi_id: int):
     taxi_pas_selected = None
     md_taxi_to_pass_selected = None
     md_pas_to_dest_selected = None
-    cash_at_drop = None
-    remaining_cost = None
     value_taxi_to_dest_selected = None
 
     if env.taxi_is_occupied(taxi_id):
@@ -162,7 +160,7 @@ def get_op_probability_weight(op):
     return probabilities_weights[op]
 
 
-def rb_minmax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, alpha=None, beta=None, expectimax=False):
+def rb_minmax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, original_depth, time_limit, alpha=None, beta=None, expectimax=False):
     other_taxi_id = (taxi_id + 1) % 2
     if env.done():
         taxi = env.get_taxi(taxi_id)
@@ -186,7 +184,9 @@ def rb_minmax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, alpha=None, beta=Non
             if MyDebug.minimax_debug_prints:
                 print(f"call minimax test op={op} from operators={operators}"
                       f" depth={depth} playing_taxi_id={playing_taxi_id}")
-            child_minimax = rb_minmax(child, taxi_id, h, not is_max_turn, depth - 1, alpha, beta, expectimax)
+            child_minimax = rb_minmax(child, taxi_id, h, is_max_turn=(not is_max_turn), \
+                                      depth=(depth - 1), original_depth=original_depth, time_limit=time_limit, \
+                                      alpha=alpha, beta=beta, expectimax=expectimax)
             max_value = max([max_value, child_minimax])
             if alpha is not None:
                 alpha = max([max_value, alpha])
@@ -205,7 +205,9 @@ def rb_minmax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, alpha=None, beta=Non
                 child.apply_operator(playing_taxi_id, op)
                 prob_weight = get_op_probability_weight(op)
                 ops_weights.append(prob_weight)
-                child_value = rb_minmax(child, taxi_id, h, not is_max_turn, depth - 1, alpha, beta)
+                child_value = rb_minmax(child, taxi_id, h, is_max_turn=(not is_max_turn), \
+                                        depth=(depth - 1), original_depth=original_depth, time_limit=time_limit, \
+                                        alpha=alpha, beta=beta, expectimax=expectimax)
                 ops_values.append(child_value)
             weights_sum = sum(ops_weights)
             expected_value = 0
@@ -216,7 +218,9 @@ def rb_minmax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, alpha=None, beta=Non
             min_value = math.inf
             for child, op in zip(children, operators):
                 child.apply_operator(playing_taxi_id, op)
-                child_minimax = rb_minmax(child, taxi_id, h, not is_max_turn, depth - 1, alpha, beta)
+                child_minimax = rb_minmax(child, taxi_id, h, is_max_turn=(not is_max_turn), \
+                                          depth=(depth - 1), original_depth=original_depth, time_limit=time_limit, \
+                                          alpha=alpha, beta=beta, expectimax=expectimax)
                 min_value = min([min_value, child_minimax])
                 if beta is not None:
                     beta = min([min_value, beta])
@@ -239,18 +243,24 @@ def taxi_run_step(env: TaxiEnv, taxi_id, time_limit, alpha_beta_pruning=False, e
 
     depth = 1
     while True:
+
         if MyDebug.minimax_debug_prints:
             print(f"depth={depth} call minimax from run_step")
             print("------------------------------")
         children_minimax = []
         for child, op in zip(children, operators):
+            current_time = time.time()
+            time_remains = time_limit - (current_time - start)
             if MyDebug.minimax_debug_prints:
                 print(f"call minimax test op={op} from operators={operators}")
             if alpha_beta_pruning:
-                child_minimax = rb_minmax(child, taxi_id, greedy_improved_h, False,\
-                                              depth - 1,alpha=-math.inf, beta=math.inf, expectimax=expectimax)
+                child_minimax = rb_minmax(child, taxi_id, greedy_improved_h, is_max_turn=False,\
+                                          depth=(depth - 1), original_depth=depth, time_limit=time_remains,\
+                                          alpha=-math.inf, beta=math.inf, expectimax=expectimax)
             else:
-                child_minimax = rb_minmax(child, taxi_id, greedy_improved_h, False, depth - 1)
+                child_minimax = rb_minmax(child, taxi_id, greedy_improved_h, is_max_turn=False,\
+                                          depth=(depth - 1), original_depth=depth, time_limit=time_remains,\
+                                          expectimax=expectimax)
             children_minimax.append(child_minimax)
         max_minimax = max(children_minimax)
         index_selected = children_minimax.index(max_minimax)

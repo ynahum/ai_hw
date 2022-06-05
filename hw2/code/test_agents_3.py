@@ -68,6 +68,11 @@ def run_games(agents_names, num_of_games=10, seed_offset=0):
 
 if __name__ == "__main__":
     run_games(["alphabeta", "greedy_improved"], num_of_games=100)
+    #----------------------------------------------------------
+    #taxi alphabeta won 41 / 100 games!
+    #taxi greedy_improved won 27 / 100 games!
+    ----------------------------------------------------------
+
     #run_games(["expectimax", "greedy_improved"], num_of_games=100)
     #----------------------------------------------------------
     #taxi expectimax won 49 / 100 games!

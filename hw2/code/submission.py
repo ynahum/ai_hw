@@ -9,8 +9,8 @@ class DebugGlobals:
     def __init__(self):
         self.greedy_improved_debug_prints = False
         self.minimax_debug_prints = False
-        self.ignore_time_limit = False
-        self.max_depth = 20
+        self.time_limit_debug_prints = False
+        self.max_depth = 100
 
 
 MyDebug = DebugGlobals()
@@ -162,13 +162,14 @@ def get_op_probability_weight(op):
 
 def rb_minmax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, original_depth, time_limit, alpha=None, beta=None, expectimax=False):
     other_taxi_id = (taxi_id + 1) % 2
+    time_to_get_back = time_limit < (0.01 * original_depth)
     if env.done():
         taxi = env.get_taxi(taxi_id)
         other_taxi = env.get_taxi(other_taxi_id)
         # as infinite reward in case we win
-        return math.inf * (taxi.cash - other_taxi.cash)
+        return math.inf * (taxi.cash - other_taxi.cash), time_to_get_back
     if depth == 0:
-        return h(env, taxi_id)
+        return h(env, taxi_id), time_to_get_back
 
     playing_taxi_id = taxi_id
     if not is_max_turn:
@@ -177,6 +178,9 @@ def rb_minmax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, original_depth, time
     operators = env.get_legal_operators(playing_taxi_id)
     children = [env.clone() for _ in operators]
 
+    start = time.time()
+    need_to_get_back = False
+
     if is_max_turn:
         max_value = -math.inf
         for child, op in zip(children, operators):
@@ -184,9 +188,14 @@ def rb_minmax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, original_depth, time
             if MyDebug.minimax_debug_prints:
                 print(f"call minimax test op={op} from operators={operators}"
                       f" depth={depth} playing_taxi_id={playing_taxi_id}")
-            child_minimax = rb_minmax(child, taxi_id, h, is_max_turn=(not is_max_turn), \
-                                      depth=(depth - 1), original_depth=original_depth, time_limit=time_limit, \
-                                      alpha=alpha, beta=beta, expectimax=expectimax)
+            current_time = time.time()
+            time_remains = time_limit - (current_time - start)
+            child_minimax, need_to_get_back = rb_minmax(
+                child, taxi_id, h, is_max_turn=(not is_max_turn), \
+                depth=(depth - 1), original_depth=original_depth, time_limit=time_remains, \
+                alpha=alpha, beta=beta, expectimax=expectimax)
+            if need_to_get_back:
+                break
             max_value = max([max_value, child_minimax])
             if alpha is not None:
                 alpha = max([max_value, alpha])
@@ -195,7 +204,9 @@ def rb_minmax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, original_depth, time
                     max_value = math.inf
         if MyDebug.minimax_debug_prints:
             print(f"select maximized max_value={max_value} depth={depth} playing_taxi_id={playing_taxi_id}")
-        return max_value
+        if MyDebug.time_limit_debug_prints:
+            print(f"need_to_get_back={need_to_get_back} original_depth={original_depth} depth={depth}")
+        return max_value, need_to_get_back
     else:
         if expectimax:
             assert (alpha is None) and (beta is None)
@@ -205,10 +216,15 @@ def rb_minmax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, original_depth, time
                 child.apply_operator(playing_taxi_id, op)
                 prob_weight = get_op_probability_weight(op)
                 ops_weights.append(prob_weight)
-                child_value = rb_minmax(child, taxi_id, h, is_max_turn=(not is_max_turn), \
-                                        depth=(depth - 1), original_depth=original_depth, time_limit=time_limit, \
-                                        alpha=alpha, beta=beta, expectimax=expectimax)
+                current_time = time.time()
+                time_remains = time_limit - (current_time - start)
+                child_value, need_to_get_back = rb_minmax(
+                    child, taxi_id, h, is_max_turn=(not is_max_turn),
+                    depth=(depth - 1), original_depth=original_depth, time_limit=time_remains,
+                    alpha=alpha, beta=beta, expectimax=expectimax)
                 ops_values.append(child_value)
+                if need_to_get_back:
+                    break
             weights_sum = sum(ops_weights)
             expected_value = 0
             for weight, value in zip(ops_weights, ops_values):
@@ -218,19 +234,24 @@ def rb_minmax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, original_depth, time
             min_value = math.inf
             for child, op in zip(children, operators):
                 child.apply_operator(playing_taxi_id, op)
-                child_minimax = rb_minmax(child, taxi_id, h, is_max_turn=(not is_max_turn), \
-                                          depth=(depth - 1), original_depth=original_depth, time_limit=time_limit, \
-                                          alpha=alpha, beta=beta, expectimax=expectimax)
+                child_minimax, need_to_get_back = rb_minmax(
+                    child, taxi_id, h, is_max_turn=(not is_max_turn),
+                    depth=(depth - 1), original_depth=original_depth, time_limit=time_limit,
+                    alpha=alpha, beta=beta, expectimax=expectimax)
                 min_value = min([min_value, child_minimax])
                 if beta is not None:
                     beta = min([min_value, beta])
                 if alpha is not None:
                     if min_value <= alpha:
                         min_value = -math.inf
+                if need_to_get_back:
+                    break
             compete_agent_value = min_value
+        if MyDebug.time_limit_debug_prints:
+            print(f"need_to_get_back={need_to_get_back} original_depth={original_depth} depth={depth}")
         if MyDebug.minimax_debug_prints:
             print(f"select minimized compete_agent_value={compete_agent_value} depth={depth} playing_taxi_id={playing_taxi_id}")
-        return compete_agent_value
+        return compete_agent_value, need_to_get_back
 
 
 def taxi_run_step(env: TaxiEnv, taxi_id, time_limit, alpha_beta_pruning=False, expectimax=False):
@@ -242,6 +263,7 @@ def taxi_run_step(env: TaxiEnv, taxi_id, time_limit, alpha_beta_pruning=False, e
         child.apply_operator(taxi_id, op)
 
     depth = 1
+
     while True:
 
         if MyDebug.minimax_debug_prints:
@@ -254,29 +276,35 @@ def taxi_run_step(env: TaxiEnv, taxi_id, time_limit, alpha_beta_pruning=False, e
             if MyDebug.minimax_debug_prints:
                 print(f"call minimax test op={op} from operators={operators}")
             if alpha_beta_pruning:
-                child_minimax = rb_minmax(child, taxi_id, greedy_improved_h, is_max_turn=False,\
-                                          depth=(depth - 1), original_depth=depth, time_limit=time_remains,\
-                                          alpha=-math.inf, beta=math.inf, expectimax=expectimax)
+                child_minimax, need_to_get_back = rb_minmax(
+                    child, taxi_id, greedy_improved_h, is_max_turn=False,
+                    depth=(depth - 1), original_depth=depth, time_limit=time_remains,
+                    alpha=-math.inf, beta=math.inf, expectimax=expectimax)
             else:
-                child_minimax = rb_minmax(child, taxi_id, greedy_improved_h, is_max_turn=False,\
-                                          depth=(depth - 1), original_depth=depth, time_limit=time_remains,\
-                                          expectimax=expectimax)
+                child_minimax, need_to_get_back = rb_minmax(
+                    child, taxi_id, greedy_improved_h, is_max_turn=False,
+                    depth=(depth - 1), original_depth=depth, time_limit=time_remains,
+                    expectimax=expectimax)
             children_minimax.append(child_minimax)
-        max_minimax = max(children_minimax)
-        index_selected = children_minimax.index(max_minimax)
+            if need_to_get_back:
+                break
+        if need_to_get_back:
+            if MyDebug.time_limit_debug_prints:
+                current_time = time.time()
+                time_remains = time_limit - (current_time - start)
+                print(f"no time left: time_remains={time_remains}")
+            break
+        else:
+            max_minimax = max(children_minimax)
+            index_selected = children_minimax.index(max_minimax)
+
         if MyDebug.minimax_debug_prints:
             print(f"final maximize max_minimax={max_minimax} children_minimax={children_minimax}"
                   " index_selected={index_selected} op selected={operators[index_selected]}")
 
-        end = time.time()
-        process_time = end - start
-        time_threshold = (time_limit/5)
-        if MyDebug.minimax_debug_prints:
-            print(f"process_time={process_time}, time_threshold={time_threshold}")
-            print("------------------------------")
-        if not MyDebug.ignore_time_limit and process_time > time_threshold:
-            break
         depth += 1
+        if MyDebug.time_limit_debug_prints:
+            print(f"increase depth={depth}")
         if depth >= MyDebug.max_depth or depth > env.num_steps:
             break
 

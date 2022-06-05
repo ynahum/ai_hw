@@ -23,7 +23,7 @@ def run_game(agent_names, seed, count_steps, time_limit= 0.5):
 
     env.generate(seed, 2*count_steps)
 
-    print('start a game')
+    #print('start a game')
     print_game = False
     if print_game:
         print('initial board:')
@@ -44,7 +44,7 @@ def run_game(agent_names, seed, count_steps, time_limit= 0.5):
         if env.done():
             break
     balances = env.get_balances()
-    print('end the game')
+    #print('end the game')
     print(balances)
     if balances[0] == balances[1]:
         return 2
@@ -55,6 +55,7 @@ def run_game(agent_names, seed, count_steps, time_limit= 0.5):
 def run_games(agents_names, num_of_games=10, seed_offset=0):
     agents_wins = [0,0]
     for seed in range(0+seed_offset,num_of_games+seed_offset):
+        print(f"game {seed}:")
         result = run_game(agent_names=agents_names, seed=seed, count_steps=50, time_limit=0.5)
         if result != 2:
             agents_wins[result] += 1
@@ -68,7 +69,7 @@ def run_games(agents_names, num_of_games=10, seed_offset=0):
 if __name__ == "__main__":
 
     #run_games(["alphabeta", "greedy_improved"])
-    run_games(["expectimax", "greedy_improved"])
+    run_games(["expectimax", "greedy_improved"], num_of_games=100)
     #run_games(["minimax", "random"])
     #run_games(["greedy_improved", "random"])
 

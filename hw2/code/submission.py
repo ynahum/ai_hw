@@ -160,9 +160,12 @@ def get_op_probability_weight(op):
     return probabilities_weights[op]
 
 
-def rb_minmax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, original_depth, time_limit, alpha=None, beta=None, expectimax=False):
+def rb_minmax(
+        env: TaxiEnv, taxi_id, h, is_max_turn, depth,
+        original_depth, time_limit, alpha=None, beta=None, expectimax=False):
+
     other_taxi_id = (taxi_id + 1) % 2
-    time_to_get_back = time_limit < (0.01 * original_depth)
+    time_to_get_back = time_limit < (0.03 * original_depth)
     if env.done():
         taxi = env.get_taxi(taxi_id)
         other_taxi = env.get_taxi(other_taxi_id)
@@ -191,8 +194,8 @@ def rb_minmax(env: TaxiEnv, taxi_id, h, is_max_turn, depth, original_depth, time
             current_time = time.time()
             time_remains = time_limit - (current_time - start)
             child_minimax, need_to_get_back = rb_minmax(
-                child, taxi_id, h, is_max_turn=(not is_max_turn), \
-                depth=(depth - 1), original_depth=original_depth, time_limit=time_remains, \
+                child, taxi_id, h, is_max_turn=(not is_max_turn),
+                depth=(depth - 1), original_depth=original_depth, time_limit=time_remains,
                 alpha=alpha, beta=beta, expectimax=expectimax)
             if need_to_get_back:
                 break

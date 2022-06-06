@@ -121,11 +121,11 @@ In $\alpha\beta$ pruning we have other advantages:\\
 2. The average time complexity is much better compared to regular MM.
 
 Other changes that can be useful are:\\
-1. If we apply both iterative deepening and $\alpha\beta$ pruning, we can reorder the children based on previous iteration of iterative deepening and thus make the the $\alpha\beta$ pruning more effective (most likely that we will prune much more).
-2. States table - we can save a hash table with states as keys and check if we were in a specific state before in order to save the MM search from that state. However, in our taxi env, the probability for a repetition of a specific state is close to 0. We can however, use part of the state features to estimate the MM value.
+1. If we apply both iterative deepening and $\alpha\beta$ pruning, we can reorder the children based on previous iterations of iterative deepening (easy to implement with states table) with higher MM value first and thus make the $\alpha\beta$ pruning more effective (we will prune much more).\\
+2. States table - we can save a hash table with states as keys and check if we were in a specific state before in order to save the MM search from that state. However, in our taxi env, the probability for a repetition of a specific state is close to 0. We can however, use part of the state features to estimate the MM value.\\
 3. Selective deepening - one can use selective deepening. Meaning, in certain cases we will go deeper in minimax search.\\
 Such cases can be when we're at a "noisy" state, or when the last move was revolutionary. An idea for measuring it might be by a big differences between heuristic values between consecutive states.\\
-We can deepen until the difference is small (calm).
+We can deepen until the difference is small (calm). For example in chess, when there are multiple pieces takings by both agents, we will wait until the diff in value is about the same.
 
 \subsection*{B.3}
 In code 

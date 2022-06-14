@@ -62,15 +62,20 @@ $$V^*(s) = \max_{a\in A(s)}Q^*(s,a) = \max_{a\in A(s)} \sum_{s'\in S} P(s'|s,a) 
 
 Value Iteration (VI):
 
-for a fixed policy:
 \begin{enumerate}
-  \item Let ${V_0} = {(V_0(s))_{s \in S}}$ be arbitrary (vector).
-  \item For $n = 0,1,2, \ldots $, set
-\[V^{\pi}_{n + 1}(s) = \sum_{s'\in S} P(s'|s,\pi(s)) [R(s,\pi(s),s') + \gamma V^{\pi}_n(s')], \forall s \in S\]
-\tab{or, equivalently in vector form,}
-\[{V^{\pi}_{n + 1}} = {P^\pi }[R^\pi + \gamma V^\pi_n].\]
+  \item Start with any initial value function $V_0(s),\quad \forall s\in S$.
+  \item Compute recursively, for $n = 0,1,2, \ldots $,
+          \[V_{n + 1}(s) = \max_{a\in A(s)} \sum_{s' \in S} P(s'|s,a)[R(s,a,s') + \gamma V_n(s')], \quad \forall s \in S\]
+  \item Apply a stopping rule to obtain a required accuracy.\\
+  If $||V_{n+1}-V_{n}||_\infty < \epsilon \cdot \frac{1-\gamma}{2\gamma}$ then $||V^{\pi_{n+1}} -
+V^{*}||_\infty \leq \epsilon$
+   \item extract optimal policy from optimal value by:
+   \[\pi(s) = arg\max_{a\in A(s)} \sum_{s' \in S} P(s'|s,a)[R(s,a,s') + \gamma V^*(s')], \quad \forall s \in S\]
 \end{enumerate}
 
+For a fixed policy value iteration, the recursive computation is changed to have $\pi(s)$ instead of $a$
+$$V^{\pi}_{n + 1}(s) = \sum_{s' \in S} P(s'|s,a)[R(s,a,s') + \gamma V^{\pi}_n(s')], \quad \forall s \in S$$
+*This can be solved also by linear system of equations solver as these are linear equations (usually when the state space is not too big)
 
 
 

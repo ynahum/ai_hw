@@ -34,5 +34,45 @@
 
 \subsection*{A}
 
+\subsubsection*{A.a}
+
+In order to work with our R(s) instead of R(s,a,s') one can define the following:
+$$\tilde R(s_t=s) = \mathbb {E}_{s'\in S, a\in A(s)}[R(s_{t+1}=s',a_t=a|s_t=s]=$$
+$$= \sum_{s'\in S} \sum_{a\in A(s)} P(s_{t+1}=s',a_t=a|s_t=s) R(s_t=s,a_t=a,s_{t+1}=s') = $$
+$$= \sum_{s'\in S} \sum_{a\in A(s)} P(s_{t+1}=s'|a_t=a,s_t=s)\pi(a_t=a|s_t=s) R(s_t=s,a_t=a,s_{t+1}=s') = $$
+$$= \sum_{a\in A(s)} \pi(a_t=a|s_t=s) \sum_{s'\in S} P(s_{t+1}=s'|a_t=a,s_t=s) R(s_t=s,a_t=a,s_{t+1}=s') = $$
+
+Thus, the value function on states $s\in S$ with some given policy $\pi(a|s)$ (probability to make an action $a$ when we're in s) is defined recursively by:
+
+$$V^{\pi}(s) = \sum_{a\in A(s)} \pi(a|s) \sum_{s'\in S} P(s'|s,a) [R(s,a,s') + \gamma V(s')]$$
+
+In case we have a deterministic given policy, we can write it as:
+
+$$V^{\pi}(s) = \sum_{s'\in S} P(s'|s,\pi(s)) [R(s,\pi(s),s') + \gamma V(s')]$$
+
+(We assumed a stationary policy and dynamics so we didn't subscript/relate to time on probabilities.)
+
+\subsubsection*{A.b}
+
+The Bellman operator:
+
+$$V^*(s) = \max_{a\in A(s)}Q^*(s,a) = \max_{a\in A(s)} \sum_{s'\in S} P(s'|s,a) [R(s,a,s') + \gamma V^*(s')]$$
+
+\subsubsection*{A.c}
+
+Value Iteration (VI):
+
+for a fixed policy:
+\begin{enumerate}
+  \item Let ${V_0} = {(V_0(s))_{s \in S}}$ be arbitrary (vector).
+  \item For $n = 0,1,2, \ldots $, set
+\[V^{\pi}_{n + 1}(s) = \sum_{s'\in S} P(s'|s,\pi(s)) [R(s,\pi(s),s') + \gamma V^{\pi}_n(s')], \forall s \in S\]
+\tab{or, equivalently in vector form,}
+\[{V^{\pi}_{n + 1}} = {P^\pi }[R^\pi + \gamma V^\pi_n].\]
+\end{enumerate}
+
+
+
+
 \end{document}
 

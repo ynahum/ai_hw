@@ -100,7 +100,7 @@ def get_policy(mdp, U):
                     next_state_value = U[next_state[0]][next_state[1]]
                     next_state_prob = probs[action_to_prob_dict[action]]
                     expected_value += next_state_value * next_state_prob
-                values[actual_action] = mdp.gamma * expected_value
+                values[actual_action] = float(mdp.board[row][col]) + mdp.gamma * expected_value
             max_action = max(values, key=values.get)
             policy[row][col] = max_action
     return policy
@@ -108,13 +108,52 @@ def get_policy(mdp, U):
 
 
 def policy_evaluation(mdp, policy):
-    # TODO:
     # Given the mdp, and a policy
     # return: the utility U(s) of each state s
     #
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError
+    num_of_states = mdp.num_row * mdp.num_col
+
+    row_col_to_id = lambda row, col, num_col: row * num_col + col
+    #id_to_row_col = lambda id, num_col: (id/num_col, id % num_col)
+    action_to_prob_dict = {'UP':0, 'DOWN':1, 'RIGHT':2, 'LEFT':3}
+
+    I = np.eye(num_of_states)
+    P = np.zeros((num_of_states, num_of_states))
+    r = np.zeros((num_of_states, 1))
+    for row in range(mdp.num_row):
+        for col in range(mdp.num_col):
+            state = (row, col)
+            state_index = row_col_to_id(row, col, mdp.num_col)
+
+            if mdp.board[row][col] == 'WALL':
+                continue
+
+            # r vector setup
+            r[state_index] = float(mdp.board[row][col])
+
+            if state in mdp.terminal_states:
+                continue
+
+            policy_action = policy[row][col]
+            next_state_probs = mdp.transition_function[policy_action]
+            for action in mdp.actions:
+                next_state = mdp.step(state, action)
+                next_state_index = row_col_to_id(next_state[0], next_state[1], mdp.num_col)
+                P[state_index][next_state_index] += next_state_probs[action_to_prob_dict[action]]
+
+    U_vec = np.linalg.inv(I - mdp.gamma * P) @ r
+    U = deepcopy(policy)
+    for row in range(mdp.num_row):
+        for col in range(mdp.num_col):
+            if mdp.board[row][col] == 'WALL':
+                U[row][col] = 'WALL'
+                continue
+            state_index = row_col_to_id(row,col,mdp.num_col)
+            U[row][col] = float(U_vec[state_index])
+
+    return U
     # ========================
 
 

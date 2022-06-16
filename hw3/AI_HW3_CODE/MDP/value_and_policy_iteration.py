@@ -158,12 +158,26 @@ def policy_evaluation(mdp, policy):
 
 
 def policy_iteration(mdp, policy_init):
-    # TODO:
     # Given the mdp, and the initial policy - policy_init
     # run the policy iteration algorithm
     # return: the optimal policy
     #
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError
+    current_policy = deepcopy(policy_init)
+    while True:
+        # policy evaluation
+        U_pi = policy_evaluation(mdp, current_policy)
+
+        # policy improvement (greedy relative to current U_pi)
+        next_policy = get_policy(mdp,U_pi)
+
+        if current_policy == next_policy:
+            optimal_policy = deepcopy(current_policy)
+            break
+            
+        current_policy = deepcopy(next_policy)
+
+    return optimal_policy
+
     # ========================

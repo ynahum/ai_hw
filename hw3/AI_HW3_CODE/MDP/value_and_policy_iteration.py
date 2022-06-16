@@ -14,10 +14,6 @@ def value_iteration(mdp, U_init, epsilon=10 ** (-3)):
 
     U_current = deepcopy(U_init)
     U_next = deepcopy(U_init)
-    #print(f"U_init={U_init}")
-    #print(f"board={mdp.board}")
-    #print(f"terminal_states={mdp.terminal_states}")
-    #print(f"probs={mdp.transition_function}")
     action_to_prob_dict = {'UP':0, 'DOWN':1, 'RIGHT':2, 'LEFT':3}
 
     iteration_counter = 0
@@ -128,6 +124,8 @@ def policy_evaluation(mdp, policy):
             state_index = row_col_to_id(row, col, mdp.num_col)
 
             if mdp.board[row][col] == 'WALL':
+                # for inversion
+                P[state_index][state_index] = 1
                 continue
 
             # r vector setup
@@ -175,7 +173,7 @@ def policy_iteration(mdp, policy_init):
         if current_policy == next_policy:
             optimal_policy = deepcopy(current_policy)
             break
-            
+
         current_policy = deepcopy(next_policy)
 
     return optimal_policy

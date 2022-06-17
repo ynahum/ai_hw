@@ -149,7 +149,7 @@ def policy_evaluation(mdp, policy):
                 U[row][col] = 'WALL'
                 continue
             state_index = row_col_to_id(row,col,mdp.num_col)
-            U[row][col] = float(U_vec[state_index])
+            U[row][col] = round(float(U_vec[state_index]),3)
 
     return U
     # ========================

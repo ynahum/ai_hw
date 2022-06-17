@@ -1,6 +1,7 @@
 """ You can import what ever you want """
 from copy import deepcopy
 import numpy as np
+from value_and_policy_iteration import policy_iteration
 
 
 def get_all_policies(mdp, U):  # You can add more input parameters as needed
@@ -51,13 +52,71 @@ def get_all_policies(mdp, U):  # You can add more input parameters as needed
     # ========================
 
 
+def set_reward(mdp, r):
+    for row in range(mdp.num_row):
+        for col in range(mdp.num_col):
+            state = (row, col)
+            if mdp.board[row][col] == 'WALL' or state in mdp.terminal_states:
+                continue
+            mdp.board[row][col] = str(r)
+
+
+def find_r_list(mdp, a, a_policy, b, b_policy, epsilon=0.01):
+    if b-a < epsilon:
+        return [a]
+
+    mid = (b+a)/2
+    #print(f"a={a}, b={b}, mid={mid}")
+    set_reward(mdp, mid)
+    mid_policy = policy_iteration(mdp, a_policy)
+    if mid_policy == a_policy:
+        #print(f"mid_policy == a_policy")
+        return find_r_list(mdp, mid, mid_policy, b, b_policy)
+    if mid_policy == b_policy:
+        #print(f"mid_policy == b_policy")
+        return find_r_list(mdp, a, a_policy, mid, mid_policy)
+
+    # mid is different from both a and b
+    #print(f"call merge a={a}, b={b}, mid={mid}")
+    low_list = find_r_list(mdp, a, a_policy, mid, mid_policy)
+    #print(f"low_list={low_list}")
+    high_list = find_r_list(mdp, mid, mid_policy, b, b_policy)
+    #print(f"High_list={high_list}")
+    merged_list = low_list + high_list
+    return merged_list
+
+
+
 def get_policy_for_different_rewards(mdp):  # You can add more input parameters as needed
-    # TODO:
     # Given the mdp
     # print / displas the optimal policy as a function of r
     # (reward values for any non-finite state)
     #
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError
+    policy = [['UP', 'UP', 'UP', 0],
+              ['UP', 'WALL', 'UP', 0],
+              ['UP', 'UP', 'UP', 'UP']]
+
+    b = 10
+    set_reward(mdp, b)
+    b_policy = policy_iteration(mdp, policy)
+    a = -10
+    set_reward(mdp, a)
+    a_policy = policy_iteration(mdp, policy)
+    r_list = find_r_list(mdp, a, a_policy, b, b_policy)
+    #print(f"r_list={r_list}")
+
+    for i, r in enumerate(r_list):
+
+        print(f"The MDP's optimal policy for", end = " ")
+        if i == 0:
+            print(f"r <= {r_list[i]}")
+        elif i == len(r_list)-1:
+            print(f"{r_list[i]} < r")
+        else:
+            print(f"{r_list[i-1]} < r <={r_list[i]}")
+        set_reward(mdp, r_list[i])
+        mdp.print_policy(policy_iteration(mdp, policy))
+
     # ========================

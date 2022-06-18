@@ -34,7 +34,7 @@
 
 \subsection*{A}
 
-\subsubsection*{A.a}
+\subsubsection*{A.1.a}
 
 In order to work with our R(s) instead of R(s,a,s') one can define the following:
 $$\tilde R(s_t=s) = \mathbb {E}_{s'\in S, a\in A(s)}[R(s_{t+1}=s',a_t=a|s_t=s]=$$
@@ -52,13 +52,13 @@ $$V^{\pi}(s) = \sum_{s'\in S} P(s'|s,\pi(s)) [R(s,\pi(s),s') + \gamma V(s')]$$
 
 (We assumed a stationary policy and dynamics so we didn't subscript/relate to time on probabilities.)
 
-\subsubsection*{A.b}
+\subsubsection*{A.1.b}
 
 The Bellman operator:
 
 $$V^*(s) = \max_{a\in A(s)}Q^*(s,a) = \max_{a\in A(s)} \sum_{s'\in S} P(s'|s,a) [R(s,a,s') + \gamma V^*(s')]$$
 
-\subsubsection*{A.c}
+\subsubsection*{A.1.c}
 
 Value Iteration (VI):\\
 
@@ -80,7 +80,7 @@ This can be solved also by linear system of equations solver as these are linear
 
 When $\gamma=1$ VI is not guaranteed to converge unless there are absorbing/goal states ($s\in S_G$ no action to transition out from it) that we can get to with probability 1 eventually ( This is known as episodic MDPs or Stochastic Shortest Path problems).
 
-\subsubsection*{A.d}
+\subsubsection*{A.1.d}
 
 Policy Iteration (PI):\\
 PI consists of 2 main parts: Policy evaluation and Policy improvement.
@@ -102,29 +102,48 @@ $$\pi_{k+1}(s) \in arg\max_{a\in A(s)} \sum_{s' \in S} P(s'|s,a)[R(s,a,s') + \ga
 
 When $\gamma=1$ PI is not guaranteed to converge unless there are absorbing/goal states ($s\in S_G$ no action to transition out from it) that we can get to with probability 1 eventually ( This is known as episodic MDPs or Stochastic Shortest Path problems).
 
-\subsubsection*{A.e}
+\subsubsection*{A.1.e}
 
 \includegraphics[]{hw3/plots/A_5.PNG}
 
-\subsubsection*{A.f}
+\subsubsection*{A.1.f}
 
 \includegraphics[]{hw3/plots/A_6.PNG}
 
 \subsection*{B}
-code intro. nothing to do.
+Wet part code intro. nothing to do.
 
 \subsection*{C}
-\subsubsection*{C.a}
-In code.
+Wet part in code.
 
 \section*{Learning Introduction}
 
 \subsection*{A}
-code intro. nothing to do.
+Wet part code intro. nothing to do.
 
 \subsection*{B}
-code intro. nothing to do.
-
-
+\subsubsection*{B.1}
+\subsubsubsection{B.1.a}
+The entropy $H(Passed)$:
+$$H(Passed)= -[\frac{2}{6}\log_2(\frac{2}{6}) + \frac{4}{6}\log_2\frac{4}{6}] = -[\frac{1}{3}(\log_21- \log_23) + \frac{2}{3}(\log_22 - \log_23)]=$$ 
+$$-[\frac{2}{3} - \log_23] = \log_23 - \frac{2}{3} \Rightarrow$$
+\rectres{$H(Passed)=\log_23 - \frac{2}{3}$}
+\subsubsubsection{B.1.b}
+The entropy $H(Passed|Average)$:
+$$H(Passed|Average=Low)= -[\frac{1}{2}\log_2\frac{1}{2} +\frac{1}{2}\log_2\frac{1}{2}] = 1$$ 
+$$H(Passed|Average=Medium)= -[\frac{1}{2}\log_2\frac{1}{2} +\frac{1}{2}\log_2\frac{1}{2}] = 1$$ 
+$$H(Passed|Average=High)= -[1\log_21 + 0\log_20] = 0$$ 
+The weighted entropy:
+$$H(Passed|Average)=\sum_{i=1}^3\frac{|E_i|}{|E|}entropy(E_i)=$$ $$=\frac{2}{6}H(Passed|Average=Low) + \frac{2}{6}H(Passed|Average=Medium)+$$
+$$+\frac{2}{6}H(Passed|Average=High)=\frac{2}{3}\Rightarrow$$
+\rectres{$H(Passed|Average)=\frac{2}{3}$}
+\subsubsubsection{B.1.c}
+The entropy $H(Passed|Studied)$:
+$$H(Passed|Studied=No)= -[\frac{2}{3}\log_2\frac{2}{3} +\frac{1}{3}\log_2\frac{1}{3}] = \log_23 - \frac{2}{3}$$ 
+$$H(Passed|Studied=Yes)= -[1\log_21 + 0\log_20] = 0$$ 
+The weighted entropy:
+$$H(Passed|Studied)=\frac{3}{6}(\log_23 - \frac{2}{3}) + \frac{3}{6}0= \frac{1}{2}\log_23 - \frac{1}{3}$$ 
+\rectres{$H(Passed|Studied)=\frac{1}{2}\log_23 - \frac{1}{3}$}
+\subsubsubsection{B.1.d}
 \end{document}
 

@@ -4,6 +4,7 @@ from utils import *
 """
 Make the imports of python packages needed
 """
+from DecisonTree import *
 
 """
 ========================================================================
@@ -62,7 +63,11 @@ def basic_experiment(x_train, y_train, x_test, y_test, formatted_print=False):
     acc = None
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError
+    labels = list(unique_vals(y_train, 0))
+    id3_dt = ID3(labels)
+    id3_dt.fit(x_train, y_train)
+    y_predictions = id3_dt.predict(x_test)
+    acc = accuracy(y_test, y_predictions)
     # ========================
 
     assert acc > 0.9, 'you should get an accuracy of at least 90% for the full ID3 decision tree'
@@ -142,6 +147,7 @@ if __name__ == '__main__':
     """
     formatted_print = True
     basic_experiment(*data_split, formatted_print)
+    exit(0)
 
     """
        cross validation experiment

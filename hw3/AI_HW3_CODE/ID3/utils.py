@@ -14,7 +14,7 @@ from sklearn.model_selection import KFold
 ========================================================================
 """
 
-ID = 123456789  # TODO: change it to your personal ID
+ID = 34462796
 random_gen = RandomState(seed=ID)
 print_formatted_values = False
 
@@ -38,7 +38,10 @@ def accuracy(y: np.array, y_pred: np.array):
     assert y.ndim == 1
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError
+
+    true_indexes = (y == y_pred)
+    N = y.shape[0]
+    accuracy_val = true_indexes.sum() / N
     # ========================
 
     return accuracy_val
@@ -53,14 +56,17 @@ def l2_dist(x1: np.array, x2: np.array):
     :return: A distance matrix of shape (N1, N2) where the entry i, j
     represents the distance between x1 sample i and x2 sample j.
     """
-    # TODO:
-    #  Implement L2-distance calculation efficiently as possible.
-    #  Note: Use only basic numpy operations, no external code.
-
-    dists = None
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError
+    N1 = x1.shape[0]
+    N2 = x2.shape[0]
+    x1_l2_norms_squared = np.sum(x1 ** 2, axis=1, keepdims=True)
+    x1_l2_norms_squared = x1_l2_norms_squared @ np.ones((1,N2))
+    inner_products = 2 * x1 @ x2.T
+    x2_l2_norms_squared = np.sum(x2 ** 2, axis=1, keepdims=True)
+    x2_l2_norms_squared = x2_l2_norms_squared @ np.ones((1,N1))
+
+    dists = np.sqrt(x1_l2_norms_squared + x2_l2_norms_squared.T - inner_products)
     # ========================
 
     return dists

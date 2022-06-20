@@ -40,8 +40,8 @@ def accuracy(y: np.array, y_pred: np.array):
     # ====== YOUR CODE: ======
 
     true_indexes = (y == y_pred)
-    N = y.shape[0]
-    accuracy_val = true_indexes.sum() / N
+    num_of_samples = y.shape[0]
+    accuracy_val = true_indexes.sum() / num_of_samples
     # ========================
 
     return accuracy_val
@@ -58,13 +58,13 @@ def l2_dist(x1: np.array, x2: np.array):
     """
 
     # ====== YOUR CODE: ======
-    N1 = x1.shape[0]
-    N2 = x2.shape[0]
+    n1 = x1.shape[0]
+    n2 = x2.shape[0]
     x1_l2_norms_squared = np.sum(x1 ** 2, axis=1, keepdims=True)
-    x1_l2_norms_squared = x1_l2_norms_squared @ np.ones((1,N2))
+    x1_l2_norms_squared = x1_l2_norms_squared @ np.ones((1,n2))
     inner_products = 2 * x1 @ x2.T
     x2_l2_norms_squared = np.sum(x2 ** 2, axis=1, keepdims=True)
-    x2_l2_norms_squared = x2_l2_norms_squared @ np.ones((1,N1))
+    x2_l2_norms_squared = x2_l2_norms_squared @ np.ones((1,n1))
 
     dists = np.sqrt(x1_l2_norms_squared + x2_l2_norms_squared.T - inner_products)
     # ========================

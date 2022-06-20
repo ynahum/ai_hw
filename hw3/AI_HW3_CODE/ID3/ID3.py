@@ -32,7 +32,11 @@ class ID3:
         impurity = 0.0
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError
+        num_of_rows = rows.shape[0]
+        for k, v in counts.items():
+            prob = v/num_of_rows
+            if prob > 0:
+                impurity -= prob * np.log2(prob)
         # ========================
 
         return impurity
@@ -56,7 +60,13 @@ class ID3:
 
         info_gain_value = 0.0
         # ====== YOUR CODE: ======
-        raise NotImplementedError
+        entropy_left = ID3.entropy(left, left_labels.squeeze())
+        entropy_right = ID3.entropy(right, right_labels.squeeze())
+        num_of_left_samples = float(left.shape[0])
+        num_of_right_samples = float(right.shape[0])
+        num_of_samples = num_of_left_samples + num_of_right_samples
+        weighted_entropy = (num_of_left_samples * entropy_left + num_of_right_samples * entropy_right) / num_of_samples
+        info_gain_value = current_uncertainty - weighted_entropy
         # ========================
 
         return info_gain_value
@@ -79,7 +89,19 @@ class ID3:
         assert len(rows) == len(labels), 'Rows size should be equal to labels size.'
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError
+        num_of_cols = rows.shape[1]
+        true_rows = np.empty((0,num_of_cols))
+        true_labels = np.empty((0,1))
+        false_rows = np.empty((0,num_of_cols))
+        false_labels = np.empty((0,1))
+        for idx, row in enumerate(rows):
+            if question.match(row):
+                true_rows = np.vstack([true_rows, row])
+                true_labels = np.vstack([true_labels, labels[idx]])
+            else:
+                false_rows = np.vstack([false_rows, row])
+                false_labels = np.vstack([false_labels, labels[idx]])
+        gain = self.info_gain(true_rows, true_labels, false_rows, false_labels, current_uncertainty)
         # ========================
 
         return gain, true_rows, true_labels, false_rows, false_labels
@@ -101,7 +123,26 @@ class ID3:
         current_uncertainty = self.entropy(rows, labels)
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError
+        num_of_cols = rows.shape[1]
+        for col_idx in range(num_of_cols):
+            if col_idx in self.used_features:
+                continue
+
+            col = rows[:,col_idx]
+            # TODO:
+            #  - find the value to split accordingly
+            #  - for now just average
+            value = np.mean(col,axis=0)
+            question = Question(col, col_idx, value)
+            gain, true_rows, true_labels, false_rows, false_labels =\
+                self.partition(rows, labels, question, current_uncertainty)
+            if gain > best_gain:
+                best_gain = gain
+                best_question = question
+                best_false_rows = false_rows
+                best_false_labels = false_labels
+                best_true_rows = true_rows
+                best_true_labels = true_labels
         # ========================
 
         return best_gain, best_question, best_true_rows, best_true_labels, best_false_rows, best_false_labels
@@ -123,7 +164,12 @@ class ID3:
         true_branch, false_branch = None, None
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError
+        # TODO:
+        #  for now only first node
+        _, best_question, best_true_rows, best_true_labels, best_false_rows, best_false_labels =\
+            self.find_best_split(rows, labels)
+        true_branch = (best_true_rows, best_true_labels)
+        false_branch = (best_false_rows, best_false_labels)
         # ========================
 
         return DecisionNode(best_question, true_branch, false_branch)
@@ -137,7 +183,7 @@ class ID3:
         # TODO: Build the tree that fits the input data and save the root to self.tree_root
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError
+        self.tree_root = self.build_tree(x_train, y_train)
         # ========================
 
     def predict_sample(self, row, node: DecisionNode or Leaf = None):

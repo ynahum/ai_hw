@@ -136,7 +136,7 @@ class ID3:
             if col_idx in self.used_features:
                 continue
 
-            # assuming all features are consecutive we look for the best value to split with
+            # assuming all features are continuous we look for the best value to split with
             col = rows[:,col_idx]
             col_sort_indexes = col.argsort()
             col_sorted = col[col_sort_indexes]
@@ -217,12 +217,23 @@ class ID3:
         true_branch, false_branch = None, None
 
         # ====== YOUR CODE: ======
-        # TODO:
-        #  for now only first node
+        counts = class_counts(rows, labels)
+        majority_class = max(counts, key=counts.get)
+        num_of_different_labels = len(set(labels))
+
+        # we assume that since this is a binary tree, we don't have to check
+        # for an empty child
+        assert(num_of_different_labels > 0)
+
+        # stopping conditions:
+        if num_of_different_labels == 1:
+            return Leaf(rows, labels)
+        # we cannot run out of features as all are continuous and we don't put it aside
+
         _, best_question, best_true_rows, best_true_labels, best_false_rows, best_false_labels =\
             self.find_best_split(rows, labels)
-        true_branch = (best_true_rows, best_true_labels)
-        false_branch = (best_false_rows, best_false_labels)
+        true_branch = self.build_tree(best_true_rows, best_true_labels)
+        false_branch = self.build_tree(best_false_rows, best_false_labels)
         # ========================
 
         return DecisionNode(best_question, true_branch, false_branch)

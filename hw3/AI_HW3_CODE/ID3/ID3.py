@@ -60,8 +60,8 @@ class ID3:
 
         info_gain_value = 0.0
         # ====== YOUR CODE: ======
-        entropy_left = ID3.entropy(left, left_labels.squeeze())
-        entropy_right = ID3.entropy(right, right_labels.squeeze())
+        entropy_left = ID3.entropy(left, np.squeeze(left_labels, axis=(1,)))
+        entropy_right = ID3.entropy(right, np.squeeze(right_labels, axis=(1,)))
         num_of_left_samples = float(left.shape[0])
         num_of_right_samples = float(right.shape[0])
         num_of_samples = num_of_left_samples + num_of_right_samples
@@ -101,7 +101,13 @@ class ID3:
             else:
                 false_rows = np.vstack([false_rows, row])
                 false_labels = np.vstack([false_labels, labels[idx]])
-        gain = self.info_gain(true_rows, true_labels, false_rows, false_labels, current_uncertainty)
+        num_of_true_samples = len(true_labels)
+        num_of_false_samples = len(false_labels)
+        if num_of_true_samples == 0 or num_of_false_samples == 0:
+            print(f"found num_of_true_samples == 0 or num_of_false_samples == 0")
+            gain = 0
+        else:
+            gain = self.info_gain(true_rows, true_labels, false_rows, false_labels, current_uncertainty)
         # ========================
 
         return gain, true_rows, true_labels, false_rows, false_labels
@@ -124,25 +130,72 @@ class ID3:
 
         # ====== YOUR CODE: ======
         num_of_cols = rows.shape[1]
+
+        # iterate over all features
         for col_idx in range(num_of_cols):
             if col_idx in self.used_features:
                 continue
 
+            # assuming all features are consecutive we look for the best value to split with
             col = rows[:,col_idx]
-            # TODO:
-            #  - find the value to split accordingly
-            #  - for now just average
-            value = np.mean(col,axis=0)
-            question = Question(col, col_idx, value)
-            gain, true_rows, true_labels, false_rows, false_labels =\
-                self.partition(rows, labels, question, current_uncertainty)
-            if gain > best_gain:
-                best_gain = gain
-                best_question = question
-                best_false_rows = false_rows
-                best_false_labels = false_labels
-                best_true_rows = true_rows
-                best_true_labels = true_labels
+            col_sort_indexes = col.argsort()
+            col_sorted = col[col_sort_indexes]
+            labels_sorted = labels[col_sort_indexes]
+            num_of_different_labels = len(set(labels_sorted))
+            all_labels_equal = (num_of_different_labels <= 1)
+            split_values = []
+
+            # if all labels are the same, we set the split value to the first
+            # thus, all samples will reside in the true branch
+            if all_labels_equal:
+                split_values.append(col_sorted[0])
+            else:
+                # find first index from which all labels are the same from the start
+                first_split_index = 0
+                first_label = labels_sorted[first_split_index]
+                for idx, label in enumerate(labels_sorted):
+                    if label == first_label:
+                        continue
+                    else:
+                        first_split_index = idx
+                        break
+
+                # find last index from which all labels are the same till the end
+                last_split_index = len(labels_sorted) - 1
+                last_label = labels_sorted[last_split_index]
+                for idx, label in reversed(list(enumerate(labels_sorted))):
+                    if label == last_label:
+                        continue
+                    else:
+                        last_split_index = idx
+                        break
+
+                assert(first_split_index <= last_split_index)
+
+                # calculate possible split values
+                for idx, _ in enumerate(col_sorted):
+                    if idx < first_split_index or idx > last_split_index:
+                        continue
+                    else:
+                        current_val = (col_sorted[idx] + col_sorted[idx + 1])/2
+                        # another optimization not to take the same values in consideration
+                        if len(split_values) > 0 and split_values[-1] == current_val:
+                            continue
+                        split_values.append(current_val)
+
+            # iterate over all possible split values for the best
+            for idx, value in enumerate(split_values):
+                question = Question(col, col_idx, value)
+                gain, true_rows, true_labels, false_rows, false_labels =\
+                    self.partition(rows, labels, question, current_uncertainty)
+                # greater or EQUAL to take the last feature that has the best IG as described
+                if gain >= best_gain:
+                    best_gain = gain
+                    best_question = question
+                    best_false_rows = false_rows
+                    best_false_labels = false_labels
+                    best_true_rows = true_rows
+                    best_true_labels = true_labels
         # ========================
 
         return best_gain, best_question, best_true_rows, best_true_labels, best_false_rows, best_false_labels

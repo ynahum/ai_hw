@@ -123,12 +123,12 @@ Wet part code intro. nothing to do.
 
 \subsection*{B}
 \subsubsection*{B.1}
-\subsubsubsection{B.1.a}
+\subsubsubsection{B.1.a.}
 The entropy $H(Passed)$:
 $$H(Passed)= -[\frac{2}{6}\log_2(\frac{2}{6}) + \frac{4}{6}\log_2\frac{4}{6}] = -[\frac{1}{3}(\log_21- \log_23) + \frac{2}{3}(\log_22 - \log_23)]=$$ 
 $$-[\frac{2}{3} - \log_23] = \log_23 - \frac{2}{3} \Rightarrow$$
 \rectres{$H(Passed)=\log_23 - \frac{2}{3}$}
-\subsubsubsection{B.1.b}
+\subsubsubsection{B.1.b.}
 The entropy $H(Passed|Average)$:
 $$H(Passed|Average=Low)= -[\frac{1}{2}\log_2\frac{1}{2} +\frac{1}{2}\log_2\frac{1}{2}] = 1$$ 
 $$H(Passed|Average=Medium)= -[\frac{1}{2}\log_2\frac{1}{2} +\frac{1}{2}\log_2\frac{1}{2}] = 1$$ 
@@ -137,13 +137,42 @@ The weighted entropy:
 $$H(Passed|Average)=\sum_{i=1}^3\frac{|E_i|}{|E|}entropy(E_i)=$$ $$=\frac{2}{6}H(Passed|Average=Low) + \frac{2}{6}H(Passed|Average=Medium)+$$
 $$+\frac{2}{6}H(Passed|Average=High)=\frac{2}{3}\Rightarrow$$
 \rectres{$H(Passed|Average)=\frac{2}{3}$}
-\subsubsubsection{B.1.c}
+\subsubsubsection{B.1.c.}
 The entropy $H(Passed|Studied)$:
 $$H(Passed|Studied=No)= -[\frac{2}{3}\log_2\frac{2}{3} +\frac{1}{3}\log_2\frac{1}{3}] = \log_23 - \frac{2}{3}$$ 
 $$H(Passed|Studied=Yes)= -[1\log_21 + 0\log_20] = 0$$ 
 The weighted entropy:
 $$H(Passed|Studied)=\frac{3}{6}(\log_23 - \frac{2}{3}) + \frac{3}{6}0= \frac{1}{2}\log_23 - \frac{1}{3}$$ 
 \rectres{$H(Passed|Studied)=\frac{1}{2}\log_23 - \frac{1}{3}$}
-\subsubsubsection{B.1.d}
+\subsubsubsection{B.1.d.}
+
+\subsection*{C}
+\subsubsection*{C.4}
+In code. passed L2/accuracy unit tests.
+\subsubsection*{C.5 - ID3 algorithm}
+\subsubsubsection{C.5.a.}\\
+In code.\\
+\\
+\subsubsubsection{C.5.b.}\\
+basic experiment passed needed accuracy with 94.69\%
+
+\subsubsection*{C.6 - early pruning}
+\subsubsubsection{C.6.a.}\\
+Pruning improves the generalization and prevent over-fitting. By having leaves with more labels to decide from, we increase our hypothesis statistical significance (law of big numbers) and the variance of our model is reduced.\\
+\\
+\subsubsubsection{C.6.b.}\\
+In code.\\
+\\
+\subsubsubsection{C.6.c.}\\
+\\
+\subsubsubsection{C.6.c.i}\\
+The plot:\\
+\subsubsubsection{C.6.c.ii}\\
+\\
+\subsubsubsection{C.6.d.}\\
+running with the  $best\_m=$ parameter we get better performance over the test data set as the accuracy is now 94.69\%
+
+
+
 \end{document}
 

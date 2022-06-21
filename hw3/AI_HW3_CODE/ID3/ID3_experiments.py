@@ -50,6 +50,7 @@ def find_best_pruning_m(train_dataset: np.array, m_choices, num_folds=5):
             y_predictions = model.predict(x_valid)
             acc = accuracy(y_valid, y_predictions)
             acc_folds.append(acc)
+        #print(f"m={m}, acc_folds={acc_folds}")
         accuracies.append(acc_folds)
         # ========================
 
@@ -104,8 +105,8 @@ def cross_validation_experiment(plot_graph=True):
     num_folds = 5
 
     # ====== YOUR CODE: ======
-    m_choices = [5, 7, 65]
-    #assert len(m_choices) >= 5, 'fill the m_choices list with  at least 5 different values for M.'
+    m_choices = [35, 40, 45, 50, 55]
+    assert len(m_choices) >= 5, 'fill the m_choices list with  at least 5 different values for M.'
 
     best_m, accuracies = find_best_pruning_m(train_dataset=train_dataset, m_choices=m_choices, num_folds=num_folds)
 
@@ -142,9 +143,9 @@ def best_m_test(x_train, y_train, x_test, y_test, min_for_pruning):
 
     # ====== YOUR CODE: ======
     labels = list(unique_vals(y_train, 0))
-    id3_dt = ID3(labels, min_for_pruning=min_for_pruning)
-    id3_dt.fit(x_train, y_train)
-    y_predictions = id3_dt.predict(x_test)
+    id3_prune = ID3(labels, min_for_pruning=min_for_pruning)
+    id3_prune.fit(x_train, y_train)
+    y_predictions = id3_prune.predict(x_test)
     acc = accuracy(y_test, y_predictions)
     # ========================
 

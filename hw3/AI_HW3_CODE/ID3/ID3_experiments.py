@@ -94,8 +94,12 @@ def cross_validation_experiment(plot_graph=True):
     num_folds = 5
 
     # ====== YOUR CODE: ======
+    m_choices = [30, 40, 50, 60 ,70]
     assert len(m_choices) >= 5, 'fill the m_choices list with  at least 5 different values for M.'
-    raise NotImplementedError
+
+    attributes_names, train_dataset, test_dataset = load_data_set('ID3')
+
+    best_m, accuracies = find_best_pruning_m(train_dataset=train_dataset, m_choices=m_choices, num_folds=num_folds)
 
     # ========================
     accuracies_mean = np.array([np.mean(acc) * 100 for acc in accuracies])
@@ -145,9 +149,8 @@ if __name__ == '__main__':
     (*) To get the results in “informal” or nicely printable string representation of an object
         modify the call "utils.set_formatted_values(value=False)" from False to True and run it
     """
-    formatted_print = True
-    basic_experiment(*data_split, formatted_print)
-    exit(0)
+    #formatted_print = True
+    #basic_experiment(*data_split, formatted_print)
 
     """
        cross validation experiment
@@ -158,6 +161,7 @@ if __name__ == '__main__':
     plot_graphs = True
     best_m = cross_validation_experiment(plot_graph=plot_graphs)
     print(f'best_m = {best_m}')
+    exit(0)
 
     """
         pruning experiment, run with the best parameter

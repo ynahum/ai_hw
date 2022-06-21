@@ -230,8 +230,10 @@ class ID3:
         assert(num_of_different_labels > 0)
 
         # stopping conditions, for now w/o prune
-        if num_of_different_labels == 1:
+        if (self.min_for_pruning == 0 and num_of_different_labels == 1) or\
+           (self.min_for_pruning > 0 and rows.shape[0] <= self.min_for_pruning):
             return Leaf(rows, labels)
+
         # we cannot run out of features as all are continuous and we don't put it aside
 
         _, best_question, best_true_rows, best_true_labels, best_false_rows, best_false_labels =\

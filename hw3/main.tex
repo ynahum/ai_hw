@@ -163,11 +163,13 @@ Pruning improves the generalization and prevent over-fitting. By having leaves w
 \subsubsubsection{C.6.b.}\\
 In code.\\
 \\
+\newpage
+\\
 \subsubsubsection{C.6.c.}\\
 \\
 \subsubsubsection{C.6.c.i}\\
 The plot:\\
-\includegraphics[scale=0.5]{hw3/plots/.PNG}
+\includegraphics[scale=0.4]{hw3/plots/cv4.png}
 \\
 The output:\\
 \\
@@ -180,13 +182,15 @@ The output:\\
 ===========================\\
   Best M   | Validation Accuracy\\
     35     | 93.03\%\\
-best_m = 35\\
+best\_m = 35\\
 Test Accuracy: 97.35\%\\
-
+\\
 \subsubsubsection{C.6.c.ii}\\
+According to the graph and output we can see that for minimum number of samples in a leaf $m=35$, we get the best accuracy 93.03\%.\\
+We find this optimal value by K fold CV process.\\
 \\
 \subsubsubsection{C.6.d.}\\
-running with the  $best\_m=$ parameter we get better performance over the test data set as the accuracy is now 94.69\%
+running with the  $best\_m=35$ parameter we get better performance over the test data set as the accuracy is now 97.35\%
 
 
 

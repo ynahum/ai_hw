@@ -60,8 +60,8 @@ class ID3:
 
         info_gain_value = 0.0
         # ====== YOUR CODE: ======
-        entropy_left = ID3.entropy(left, np.squeeze(left_labels, axis=(1,)))
-        entropy_right = ID3.entropy(right, np.squeeze(right_labels, axis=(1,)))
+        entropy_left = ID3.entropy(left, left_labels)
+        entropy_right = ID3.entropy(right, right_labels)
         num_of_left_samples = float(left.shape[0])
         num_of_right_samples = float(right.shape[0])
         num_of_samples = num_of_left_samples + num_of_right_samples
@@ -101,6 +101,9 @@ class ID3:
             else:
                 false_rows = np.vstack([false_rows, row])
                 false_labels = np.vstack([false_labels, labels[idx]])
+
+        true_labels = np.squeeze(true_labels, axis=(1,))
+        false_labels = np.squeeze(false_labels, axis=(1,))
         num_of_true_samples = len(true_labels)
         num_of_false_samples = len(false_labels)
         if num_of_true_samples == 0 or num_of_false_samples == 0:
@@ -157,7 +160,7 @@ class ID3:
                     if label == first_label:
                         continue
                     else:
-                        first_split_index = idx
+                        first_split_index = idx - 1
                         break
 
                 # find last index from which all labels are the same till the end
@@ -217,15 +220,16 @@ class ID3:
         true_branch, false_branch = None, None
 
         # ====== YOUR CODE: ======
-        counts = class_counts(rows, labels)
-        majority_class = max(counts, key=counts.get)
-        num_of_different_labels = len(set(labels))
+        # done in leaf build already
+        #counts = class_counts(rows, labels)
+        #majority_class = max(counts, key=counts.get)
 
         # we assume that since this is a binary tree, we don't have to check
         # for an empty child
+        num_of_different_labels = len(set(labels))
         assert(num_of_different_labels > 0)
 
-        # stopping conditions:
+        # stopping conditions, for now w/o prune
         if num_of_different_labels == 1:
             return Leaf(rows, labels)
         # we cannot run out of features as all are continuous and we don't put it aside

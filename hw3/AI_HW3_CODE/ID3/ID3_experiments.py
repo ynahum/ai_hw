@@ -40,7 +40,17 @@ def find_best_pruning_m(train_dataset: np.array, m_choices, num_folds=5):
         #  or implement something else.
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError
+        kf = KFold(n_splits=num_folds, random_state=random_gen, shuffle=True)
+        acc_folds = []
+        for train_index, val_idx in kf.split(train_dataset):
+            ds_train = train_dataset.loc[train_index]
+            ds_valid = train_dataset.loc[val_idx]
+            x_train, y_train, x_valid, y_valid = get_dataset_split(ds_train, ds_valid, target_attribute)
+            model.fit(x_train, y_train)
+            y_predictions = model.predict(x_valid)
+            acc = accuracy(y_valid, y_predictions)
+            acc_folds.append(acc)
+        accuracies.append(acc_folds)
         # ========================
 
     best_m_idx = np.argmax([np.mean(acc) for acc in accuracies])
@@ -94,10 +104,8 @@ def cross_validation_experiment(plot_graph=True):
     num_folds = 5
 
     # ====== YOUR CODE: ======
-    m_choices = [30, 40, 50, 60 ,70]
-    assert len(m_choices) >= 5, 'fill the m_choices list with  at least 5 different values for M.'
-
-    attributes_names, train_dataset, test_dataset = load_data_set('ID3')
+    m_choices = [10, 20, 30, 40, 50, 60]
+    #assert len(m_choices) >= 5, 'fill the m_choices list with  at least 5 different values for M.'
 
     best_m, accuracies = find_best_pruning_m(train_dataset=train_dataset, m_choices=m_choices, num_folds=num_folds)
 
@@ -133,7 +141,11 @@ def best_m_test(x_train, y_train, x_test, y_test, min_for_pruning):
     acc = None
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError
+    labels = list(unique_vals(y_train, 0))
+    id3_dt = ID3(labels, min_for_pruning=min_for_pruning)
+    id3_dt.fit(x_train, y_train)
+    y_predictions = id3_dt.predict(x_test)
+    acc = accuracy(y_test, y_predictions)
     # ========================
 
     return acc
@@ -149,8 +161,8 @@ if __name__ == '__main__':
     (*) To get the results in “informal” or nicely printable string representation of an object
         modify the call "utils.set_formatted_values(value=False)" from False to True and run it
     """
-    #formatted_print = True
-    #basic_experiment(*data_split, formatted_print)
+    formatted_print = True
+    basic_experiment(*data_split, formatted_print)
 
     """
        cross validation experiment
@@ -161,7 +173,6 @@ if __name__ == '__main__':
     plot_graphs = True
     best_m = cross_validation_experiment(plot_graph=plot_graphs)
     print(f'best_m = {best_m}')
-    exit(0)
 
     """
         pruning experiment, run with the best parameter

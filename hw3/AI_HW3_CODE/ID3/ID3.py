@@ -229,9 +229,8 @@ class ID3:
         num_of_different_labels = len(set(labels))
         assert(num_of_different_labels > 0)
 
-        # stopping conditions, for now w/o prune
-        if (self.min_for_pruning == 0 and num_of_different_labels == 1) or\
-           (self.min_for_pruning > 0 and rows.shape[0] <= self.min_for_pruning):
+        # stopping conditions
+        if (num_of_different_labels == 1) or (self.min_for_pruning > 0 and rows.shape[0] < self.min_for_pruning):
             return Leaf(rows, labels)
 
         # we cannot run out of features as all are continuous and we don't put it aside

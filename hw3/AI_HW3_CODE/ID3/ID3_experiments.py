@@ -4,7 +4,7 @@ from utils import *
 """
 Make the imports of python packages needed
 """
-from DecisonTree import *
+
 
 """
 ========================================================================
@@ -74,7 +74,7 @@ def basic_experiment(x_train, y_train, x_test, y_test, formatted_print=False):
     acc = None
 
     # ====== YOUR CODE: ======
-    labels = list(unique_vals(y_train, 0))
+    labels = list(set(y_train))
     id3_dt = ID3(labels)
     id3_dt.fit(x_train, y_train)
     y_predictions = id3_dt.predict(x_test)
@@ -105,7 +105,7 @@ def cross_validation_experiment(plot_graph=True):
     num_folds = 5
 
     # ====== YOUR CODE: ======
-    m_choices = [35, 40, 45, 50, 55]
+    m_choices = [25, 35,  45, 55, 65]
     assert len(m_choices) >= 5, 'fill the m_choices list with  at least 5 different values for M.'
 
     best_m, accuracies = find_best_pruning_m(train_dataset=train_dataset, m_choices=m_choices, num_folds=num_folds)
@@ -142,7 +142,7 @@ def best_m_test(x_train, y_train, x_test, y_test, min_for_pruning):
     acc = None
 
     # ====== YOUR CODE: ======
-    labels = list(unique_vals(y_train, 0))
+    labels = list(set(y_train))
     id3_prune = ID3(labels, min_for_pruning=min_for_pruning)
     id3_prune.fit(x_train, y_train)
     y_predictions = id3_prune.predict(x_test)

@@ -164,29 +164,39 @@ Pruning improves the generalization and prevent over-fitting. By having leaves w
 In code.\\
 \\
 \newpage
-\\
+\subsubsubsection{.}\\
 \subsubsubsection{C.6.c.}\\
 \\
 \subsubsubsection{C.6.c.i}\\
-The plot:\\
 \includegraphics[scale=0.4]{hw3/plots/cv4.png}
 \\
-The output:\\
+The KFold CV run output:\\
 \\
-M value  | Validation Accuracy\\
-  25     | 92.14\%\\
-  35     | 92.42\%\\
-  45     | 91.83\%\\
-  55     | 90.96\%\\
-  65     | 89.50\%\\
-===========================\\
-Best M   | Validation Accuracy\\
-  35     | 92.42\%\\
-best\_m = 35\\
-Test Accuracy: 97.35\%\\
+\begin{center}
+\begin{tabular}{ |c|c| } 
+ \hline
+ M value & Validation Accuracy \\ 
+ \hline\hline
+ 25 & 92.14\% \\ 
+ 35 & 92.42\% \\ 
+ 45 & 91.83\% \\ 
+ 55 & 90.96\% \\ 
+ 65 & 89.50\% \\ 
+ \hline
+\end{tabular}
+\end{center}
+\begin{center}
+\begin{tabular}{ |c|c| } 
+ \hline
+Best M  & Validation Accuracy \\ 
+ \hline\hline
+ 35 & 92.42\% \\ 
+ \hline
+\end{tabular}
+\end{center}
 \\
 \subsubsubsection{C.6.c.ii}\\
-According to the graph and output we can see that for minimum number of samples in a leaf $m=35$, we get the best accuracy 93.03\%.\\
+According to the graph and output we can see that for minimum number of samples in a leaf $m=35$, we get the best accuracy 92.42\%.\\
 We find this optimal value by K fold CV process.\\
 \\
 \subsubsubsection{C.6.d.}\\

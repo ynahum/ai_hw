@@ -132,6 +132,9 @@ class ID3:
         current_uncertainty = self.entropy(rows, labels)
 
         # ====== YOUR CODE: ======
+
+        assert (len(set(labels)) > 1)
+
         num_of_cols = rows.shape[1]
 
         # iterate over all features
@@ -144,47 +147,41 @@ class ID3:
             col_sort_indexes = col.argsort()
             col_sorted = col[col_sort_indexes]
             labels_sorted = labels[col_sort_indexes]
-            num_of_different_labels = len(set(labels_sorted))
-            all_labels_equal = (num_of_different_labels <= 1)
+
             split_values = []
 
-            # if all labels are the same, we set the split value to the first
-            # thus, all samples will reside in the true branch
-            if all_labels_equal:
-                split_values.append(col_sorted[0])
-            else:
-                # find first index from which all labels are the same from the start
-                first_split_index = 0
-                first_label = labels_sorted[first_split_index]
-                for idx, label in enumerate(labels_sorted):
-                    if label == first_label:
-                        continue
-                    else:
-                        first_split_index = idx - 1
-                        break
+            # find first index from which all labels are the same from the start
+            first_split_index = 0
+            first_label = labels_sorted[first_split_index]
+            for idx, label in enumerate(labels_sorted):
+                if label == first_label:
+                    continue
+                else:
+                    first_split_index = idx - 1
+                    break
 
-                # find last index from which all labels are the same till the end
-                last_split_index = len(labels_sorted) - 1
-                last_label = labels_sorted[last_split_index]
-                for idx, label in reversed(list(enumerate(labels_sorted))):
-                    if label == last_label:
-                        continue
-                    else:
-                        last_split_index = idx
-                        break
+            # find last index from which all labels are the same till the end
+            last_split_index = len(labels_sorted) - 1
+            last_label = labels_sorted[last_split_index]
+            for idx, label in reversed(list(enumerate(labels_sorted))):
+                if label == last_label:
+                    continue
+                else:
+                    last_split_index = idx
+                    break
 
-                assert(first_split_index <= last_split_index)
+            assert(first_split_index <= last_split_index)
 
-                # calculate possible split values
-                for idx, _ in enumerate(col_sorted):
-                    if idx < first_split_index or idx > last_split_index:
+            # calculate possible split values
+            for idx, _ in enumerate(col_sorted):
+                if idx < first_split_index or idx > last_split_index:
+                    continue
+                else:
+                    current_val = (col_sorted[idx] + col_sorted[idx + 1])/2
+                    # another optimization not to take the same values in consideration
+                    if len(split_values) > 0 and split_values[-1] == current_val:
                         continue
-                    else:
-                        current_val = (col_sorted[idx] + col_sorted[idx + 1])/2
-                        # another optimization not to take the same values in consideration
-                        if len(split_values) > 0 and split_values[-1] == current_val:
-                            continue
-                        split_values.append(current_val)
+                    split_values.append(current_val)
 
             # iterate over all possible split values for the best
             for idx, value in enumerate(split_values):
@@ -234,11 +231,21 @@ class ID3:
             return Leaf(rows, labels)
 
         # we cannot run out of features as all are continuous and we don't put it aside
+        _, best_question, t_rows, t_labels, f_rows, f_labels = self.find_best_split(rows, labels)
 
-        _, best_question, best_true_rows, best_true_labels, best_false_rows, best_false_labels =\
-            self.find_best_split(rows, labels)
-        true_branch = self.build_tree(best_true_rows, best_true_labels)
-        false_branch = self.build_tree(best_false_rows, best_false_labels)
+        # inner function for checking if child is a leaf due to pruning.
+        # if yes, we set it as a Leaf with parent (current) node rows and labels
+        def is_branch_child_pruned(branch, branch_rows, branch_labels):
+            return self.min_for_pruning > 0 and isinstance(branch, Leaf) and\
+                   branch_rows[0] < self.min_for_pruning and len(set(branch_labels)) > 1
+
+        true_branch = self.build_tree(t_rows, t_labels)
+        if is_branch_child_pruned(true_branch, t_rows, t_labels):
+            true_branch = Leaf(rows, labels)
+
+        false_branch = self.build_tree(f_rows, f_labels)
+        if is_branch_child_pruned(false_branch, f_rows, f_labels):
+            false_branch = Leaf(rows, labels)
         # ========================
 
         return DecisionNode(best_question, true_branch, false_branch)

@@ -235,16 +235,16 @@ class ID3:
 
         # inner function for checking if child is a leaf due to pruning.
         # if yes, we set it as a Leaf with parent (current) node rows and labels
-        def is_branch_child_pruned(branch, branch_rows, branch_labels):
-            return self.min_for_pruning > 0 and isinstance(branch, Leaf) and\
-                   branch_rows[0] < self.min_for_pruning and len(set(branch_labels)) > 1
+        def is_branch_child_pruned(branch, branch_rows, branch_labels, min_for_pruning):
+            return min_for_pruning > 0 and isinstance(branch, Leaf) and\
+                   branch_rows.shape[0] < min_for_pruning and len(set(branch_labels)) > 1
 
         true_branch = self.build_tree(t_rows, t_labels)
-        if is_branch_child_pruned(true_branch, t_rows, t_labels):
+        if is_branch_child_pruned(true_branch, t_rows, t_labels, self.min_for_pruning):
             true_branch = Leaf(rows, labels)
 
         false_branch = self.build_tree(f_rows, f_labels)
-        if is_branch_child_pruned(false_branch, f_rows, f_labels):
+        if is_branch_child_pruned(false_branch, f_rows, f_labels, self.min_for_pruning):
             false_branch = Leaf(rows, labels)
         # ========================
 

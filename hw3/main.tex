@@ -127,7 +127,7 @@ Wet part code intro. nothing to do.
 The entropy $H(Passed)$:
 $$H(Passed)= -[\frac{2}{6}\log_2(\frac{2}{6}) + \frac{4}{6}\log_2\frac{4}{6}] = -[\frac{1}{3}(\log_21- \log_23) + \frac{2}{3}(\log_22 - \log_23)]=$$ 
 $$-[\frac{2}{3} - \log_23] = \log_23 - \frac{2}{3} \Rightarrow$$
-\rectres{$H(Passed)=\log_23 - \frac{2}{3}$}
+\rectres{$H(Passed)=\log_23 - \frac{2}{3} \approx 0.9183$}
 \subsubsubsection{B.1.b.}
 The entropy $H(Passed|Average)$:
 $$H(Passed|Average=Low)= -[\frac{1}{2}\log_2\frac{1}{2} +\frac{1}{2}\log_2\frac{1}{2}] = 1$$ 
@@ -143,8 +143,12 @@ $$H(Passed|Studied=No)= -[\frac{2}{3}\log_2\frac{2}{3} +\frac{1}{3}\log_2\frac{1
 $$H(Passed|Studied=Yes)= -[1\log_21 + 0\log_20] = 0$$ 
 The weighted entropy:
 $$H(Passed|Studied)=\frac{3}{6}(\log_23 - \frac{2}{3}) + \frac{3}{6}0= \frac{1}{2}\log_23 - \frac{1}{3}$$ 
-\rectres{$H(Passed|Studied)=\frac{1}{2}\log_23 - \frac{1}{3}$}
-\subsubsubsection{B.1.d.}
+\rectres{$H(Passed|Studied)=\frac{1}{2}\log_23 - \frac{1}{3} \approx 0.4591$}
+\newpage\\
+.\\
+\subsubsubsection{B.1.d.}\\
+The IG is bigger when selecting the "studied" feature. so we get the following tree (based on ID3 algo with the given samples):\\
+\includegraphics[]{hw3/plots/tree.PNG}
 
 \subsection*{C}
 \subsubsection*{C.4}

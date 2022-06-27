@@ -119,23 +119,21 @@ Wet part in code.
 \subsection*{Bonus}
 We've implemented the code and used the previous section parts in order to calculate optimal policies. in specific the policy iteration:\\
 \\
-\textbf{from value\_and\_policy\_iteration import policy\_iteration}\\
+\textbf{from value\_and\_policy\_iteration import *}\\
 \newpage\\
 .\\
-All optimal policies for the given rewards and $\gamma=1$:\\
+All optimal policies for the given immediate rewards are all 0 and $\gamma=1$:\\
 \includegraphics[]{hw3/plots/all_optimal_policies.PNG}
 \newpage\\
 .\\
-Reward ranges with specific optimal policy when $\gamma=0.9$:\\
+Reward ranges with specific optimal policy when $\gamma=1$:\\
 \includegraphics[scale=0.9]{hw3/plots/r1.PNG}
 \includegraphics[scale=0.9]{hw3/plots/r2.PNG}\\
-\includegraphics[scale=0.9]{hw3/plots/r3.PNG}
-
 \\
-Note: In printing all reward ranges, since we used policy iteration which uses policy evaluation by inverting a matrix and $(I-\gamma P)^{-1}$ is not invert-able (0 eigen value by definition as P has and eigen value of 1) if $\gamma == 1$, printing all rewards ranges for $\gamma == 1$ case were not done.\\
-We could have run value iteration each time and extract the optimal policy, but policy evaluation does it in less iterations.
-So, we added some prints for $\gamma < 1$.\\
-
+Note: In printing all reward ranges, we used VI instead of PI.\\
+We didn't use PI since it uses policy evaluation by inverting a matrix and $(I-\gamma P)^{-1}$ is not invert-able (0 eigen value by definition as P has and eigen value of 1) if $\gamma == 1$.\\
+For the case when $\gamma=1$, we've limited the range to find by an upper bound of 0 immediate reward as otherwise VI will not converge.
+\newpage
 \section*{Learning Introduction}
 
 \subsection*{A}

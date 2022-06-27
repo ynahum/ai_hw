@@ -120,8 +120,17 @@ Wet part in code.
 We've implemented the code and used the previous section parts in order to calculate optimal policies. in specific the policy iteration:\\
 \\
 \textbf{from value\_and\_policy\_iteration import policy\_iteration}\\
+\newpage\\
+.\\
+All optimal policies for the given rewards and $\gamma=1$:\\
+\includegraphics[]{hw3/plots/all_optimal_policies.PNG}
+\newpage\\
+.\\
+Reward ranges with specific optimal policy when $\gamma=0.9$:\\
+\includegraphics[scale=0.9]{hw3/plots/r1.PNG}
+\includegraphics[scale=0.9]{hw3/plots/r2.PNG}\\
+\includegraphics[scale=0.9]{hw3/plots/r3.PNG}
 
-\\TODO:plots
 \\
 Note: In printing all reward ranges, since we used policy iteration which uses policy evaluation by inverting a matrix and $(I-\gamma P)^{-1}$ is not invert-able (0 eigen value by definition as P has and eigen value of 1) if $\gamma == 1$, printing all rewards ranges for $\gamma == 1$ case were not done.\\
 We could have run value iteration each time and extract the optimal policy, but policy evaluation does it in less iterations.
@@ -197,13 +206,12 @@ Pruning improves the generalization and prevent over-fitting. By having leaves w
 \subsubsubsection{C.6.b.}\\
 In code.\\
 \\
-\newpage
-\subsubsubsection{.}\\
 \subsubsubsection{C.6.c.}\\
 \\
 \subsubsubsection{C.6.c.i}\\
 \includegraphics[scale=0.4]{hw3/plots/cv4.png}
 \\
+\newpage
 The KFold CV run output:\\
 \\
 \begin{center}

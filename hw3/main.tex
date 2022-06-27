@@ -111,15 +111,26 @@ When $\gamma=1$ PI is not guaranteed to converge unless there are absorbing/goal
 \includegraphics[]{hw3/plots/A_6.PNG}
 
 \subsection*{B}
-Wet part code intro. nothing to do.
+Wet part code intro.
 
 \subsection*{C}
 Wet part in code.
 
+\subsection*{Bonus}
+We've implemented the code and used the previous section parts in order to calculate optimal policies. in specific the policy iteration:\\
+\\
+\textbf{from value\_and\_policy\_iteration import policy\_iteration}\\
+
+\\TODO:plots
+\\
+Note: In printing all reward ranges, since we used policy iteration which uses policy evaluation by inverting a matrix and $(I-\gamma P)^{-1}$ is not invert-able (0 eigen value by definition as P has and eigen value of 1) if $\gamma == 1$, printing all rewards ranges for $\gamma == 1$ case were not done.\\
+We could have run value iteration each time and extract the optimal policy, but policy evaluation does it in less iterations.
+So, we added some prints for $\gamma < 1$.\\
+
 \section*{Learning Introduction}
 
 \subsection*{A}
-Wet part code intro. nothing to do.
+Wet part code intro.
 
 \subsection*{B}
 \subsubsection*{B.1}
@@ -165,6 +176,7 @@ For $K=5,7$, we predict wrongly on 4 out of 14 examples (the "+" above the "-" 5
 For $K=9$ we get again $\frac{10}{14}$ as all the "-" 5-line and "+" 5-line are predicted wrongly. For other bigger K's, it is also very bad.\\
 \\
 Bottom line, for smallest LOOCV $\frac{2}{7}$, one should take $K=5$ or $K=7$\\
+\\
 \subsubsubsection{B.3.d.}\\
 \includegraphics[scale=0.5]{hw3/plots/q3_answer.PNG}
 

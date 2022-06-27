@@ -1,7 +1,5 @@
 """ You can import what ever you want """
-from copy import deepcopy
-import numpy as np
-from value_and_policy_iteration import policy_iteration
+from value_and_policy_iteration import *
 
 
 def get_all_policies(mdp, U):  # You can add more input parameters as needed
@@ -68,7 +66,13 @@ def find_r_list(mdp, a, a_policy, b, b_policy, epsilon=0.01):
     mid = (b+a)/2
     #print(f"a={a}, b={b}, mid={mid}")
     set_reward(mdp, mid)
-    mid_policy = policy_iteration(mdp, a_policy)
+
+    U_init = [[0, 0, 0, 0],
+         [0, 0, 0, 0],
+         [0, 0, 0, 0]]
+
+    U_opt_mid = value_iteration(mdp, U_init)
+    mid_policy = get_policy(mdp, U_opt_mid)
     if mid_policy == a_policy:
         #print(f"mid_policy == a_policy")
         return find_r_list(mdp, mid, mid_policy, b, b_policy)
@@ -94,16 +98,20 @@ def get_policy_for_different_rewards(mdp):  # You can add more input parameters 
     #
 
     # ====== YOUR CODE: ======
-    policy = [['UP', 'UP', 'UP', 0],
-              ['UP', 'WALL', 'UP', 0],
-              ['UP', 'UP', 'UP', 'UP']]
+    U = [[0, 0, 0, 0],
+         [0, 0, 0, 0],
+         [0, 0, 0, 0]]
 
     b = 10
+    if mdp.gamma == 1:
+        b = 0
     set_reward(mdp, b)
-    b_policy = policy_iteration(mdp, policy)
+    U_opt_b = value_iteration(mdp, U)
+    b_policy = get_policy(mdp, U_opt_b)
     a = -10
     set_reward(mdp, a)
-    a_policy = policy_iteration(mdp, policy)
+    U_opt_a = value_iteration(mdp, U)
+    a_policy = get_policy(mdp, U_opt_a)
     r_list = find_r_list(mdp, a, a_policy, b, b_policy)
     #print(f"r_list={r_list}")
 
@@ -117,6 +125,8 @@ def get_policy_for_different_rewards(mdp):  # You can add more input parameters 
         else:
             print(f"{r_list[i-1]} < r <={r_list[i]}")
         set_reward(mdp, r_list[i])
-        mdp.print_policy(policy_iteration(mdp, policy))
+        U_opt_r = value_iteration(mdp, U)
+        r_policy = get_policy(mdp, U_opt_r)
+        mdp.print_policy(r_policy)
 
     # ========================

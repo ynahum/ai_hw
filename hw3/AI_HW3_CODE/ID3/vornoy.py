@@ -35,12 +35,13 @@ for weights in ['uniform', 'distance']:
     plt.pcolormesh(xx, yy, Z, cmap=cmap_light)
 
     # Plot also the training points
-    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap_bold)
     plt.xlim(xx.min(), xx.max())
     plt.ylim(yy.min(), yy.max())
-    plt.vlines(1.5,0,3, colors='g')
-    plt.scatter([1.4], [2], cmap=cmap_bold, marker='x')
+    plt.vlines(1.5,0,3, colors='k', linestyles='dashed')
+    plt.scatter([X[0, 0]], [X[0, 1]], color='r', marker='_')
+    plt.scatter([X[1, 0]], [X[1, 1]], color='b', marker='+')
+    plt.vlines(1.5, 0, 3, colors='g')
+    plt.scatter([1.4], [2], color='b', marker='+')
     plt.title("True f == 1NN == ID3")
-    plt.grid()
 
 plt.show()

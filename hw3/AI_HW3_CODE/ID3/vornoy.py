@@ -38,9 +38,9 @@ for weights in ['uniform', 'distance']:
     plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap_bold)
     plt.xlim(xx.min(), xx.max())
     plt.ylim(yy.min(), yy.max())
-    plt.vlines(1.5,0,3, colors='g')
-    plt.scatter([1.25], [2], cmap=cmap_bold, marker='x')
-    plt.title("True f = ID3 != KNN")
+    plt.vlines(1.5,0,3, colors='k', linestyles='dashed')
+    plt.scatter([1.25], [2], c=[0], cmap=cmap_bold, marker='x')
+    plt.title("True f = KNN != ID3")
     plt.grid()
 
 plt.show()

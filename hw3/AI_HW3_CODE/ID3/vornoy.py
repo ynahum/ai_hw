@@ -10,7 +10,7 @@ n_neighbors = 1
 h = .02  # step size in the mesh
 
 # set point and labels
-X = np.array([[2, 2], [1, 1]])
+X = np.array([[2, 1.5], [1, 1.5]])
 y = np.array([0, 1])
 # Create color maps
 cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
@@ -38,10 +38,9 @@ for weights in ['uniform', 'distance']:
     plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap_bold)
     plt.xlim(xx.min(), xx.max())
     plt.ylim(yy.min(), yy.max())
-    plt.vlines(1.5,0,3, colors='k', linestyles='dashed')
-    plt.vlines(1.75,0,3, colors='g')
-    plt.scatter([1.6], [2], cmap=cmap_bold, marker='x')
-    plt.title("True f != 1NN != ID3")
+    plt.vlines(1.5,0,3, colors='g')
+    plt.scatter([1.4], [2], cmap=cmap_bold, marker='x')
+    plt.title("True f == 1NN == ID3")
     plt.grid()
 
 plt.show()

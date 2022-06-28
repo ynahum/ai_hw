@@ -121,14 +121,12 @@ We've implemented the code and used the previous section parts in order to calcu
 \\
 \textbf{from value\_and\_policy\_iteration import *}\\
 \newpage\\
-.\\
-All optimal policies for the given immediate rewards are all 0 and $\gamma=1$:\\
+All optimal policies when the given immediate rewards are all 0 and $\gamma=1$:\\
 \includegraphics[]{hw3/plots/all_optimal_policies.PNG}
 \newpage\\
-.\\
 Reward ranges with specific optimal policy when $\gamma=1$:\\
-\includegraphics[scale=0.9]{hw3/plots/r1.PNG}
-\includegraphics[scale=0.9]{hw3/plots/r2.PNG}\\
+\includegraphics[scale=0.6]{hw3/plots/r1.PNG}
+\includegraphics[scale=0.6]{hw3/plots/r2.PNG}\\
 \\
 Note: In printing all reward ranges, we used VI instead of PI.\\
 We didn't use PI since it uses policy evaluation by inverting a matrix and $(I-\gamma P)^{-1}$ is not invert-able (0 eigen value by definition as P has and eigen value of 1) if $\gamma == 1$.\\
